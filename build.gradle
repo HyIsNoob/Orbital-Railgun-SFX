@@ -77,6 +77,24 @@ jar {
 	}
 }
 
+// Convenience task: copy built jar(s) into the local releases/ folder
+tasks.register('releaseLocal') {
+	group = 'distribution'
+	description = 'Copy built JARs into the releases/ folder.'
+	dependsOn tasks.named('build')
+	doLast {
+		def outDir = layout.projectDirectory.dir('releases').asFile
+		outDir.mkdirs()
+		// Copy both the regular and remapped jars if present
+		copy {
+			from layout.buildDirectory.dir('libs')
+			include "${archives_base_name}-${version}.jar"
+			include "${archives_base_name}-${version}-sources.jar"
+			into outDir
+		}
+	}
+}
+
 // configure the maven publication
 publishing {
 	publications {
