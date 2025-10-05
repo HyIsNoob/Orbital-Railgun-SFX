@@ -1,0 +1,20 @@
+{
+  "railgun_shoot": {
+    "subtitle": "subtitle.orbital_railgun_sounds.railgun_shoot",
+    "sounds": [
+      "orbital_railgun_sounds:railgun-shoot"
+    ]
+  },
+  "scope_on": {
+    "subtitle": "subtitle.orbital_railgun_sounds.scope_on",
+    "sounds": [
+      "orbital_railgun_sounds:scope-on"
+    ]
+  },
+  "equip": {
+    "subtitle": "subtitle.orbital_railgun_sounds.equip",
+    "sounds": [
+      "orbital_railgun_sounds:equip"
+    ]
+  }
+}
