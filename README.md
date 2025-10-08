@@ -3,8 +3,7 @@
 Client-side addon that adds custom sound effects to the [Orbital Railgun](https://modrinth.com/mod/orbital-railgun) mod. It introduces three core sounds—equip (draw), scope-on (start aiming), and fire (when the railgun actually shoots)
 ## Download (for players)
 
-- Go to the GitHub Releases tab of this repo and download the latest `.jar` file.
-- Link: <https://github.com/HyIsNoob/Orbital-Railgun-SFX/releases>
+- [Go to Modrinth](https://modrinth.com/mod/orbital-railgun-sounds)
 
 ## How to Install
 
