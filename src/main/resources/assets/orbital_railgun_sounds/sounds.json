@@ -1,7 +1,12 @@
 {
   "railgun_shoot": {
     "subtitle": "subtitle.orbital_railgun_sounds.railgun_shoot",
-    "sounds": ["orbital_railgun_sounds:railgun-shoot"]
+    "sounds": [
+      {
+        "name": "orbital_railgun_sounds:railgun-shoot",
+        "attenuation_distance": 500
+      }
+    ]
   },
   "scope_on": {
     "subtitle": "subtitle.orbital_railgun_sounds.scope_on",

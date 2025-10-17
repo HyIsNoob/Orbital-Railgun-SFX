@@ -75,8 +75,6 @@ public class OrbitalRailgunSoundsClient implements ClientModInitializer {
                 buf.writeFloat(DEFAULT_PITCH);
 
                 ClientPlayNetworking.send(OrbitalRailgunSounds.PLAY_SOUND_PACKET_ID, buf);
-
-                System.out.println("Sent railgun shoot sound packet to server at " + player.getBlockPos());
             }
 
             lastCooldownActive = cooldownNow;
