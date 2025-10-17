@@ -101,6 +101,7 @@ $RECYCLE.BIN/
 
 .github/
 .gradle/
+.mvn/
 .vscode/
 build/
 
