@@ -1,7 +1,7 @@
 package io.github.hyisnoob.railgunsounds.client.sounds;
 
-import io.netty.buffer.Unpooled;
 import io.github.hyisnoob.railgunsounds.registry.OrbitalRailgunSoundsRegistry;
+import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -14,8 +14,6 @@ import net.minecraft.util.Identifier;
 
 public class OrbitalRailgunSoundsSounds {
     private static final Identifier ORBITAL_RAILGUN_ITEM_ID = new Identifier("orbital_railgun", "orbital_railgun");
-    private static final float DEFAULT_VOLUME = 1.0f;
-    private static final float DEFAULT_PITCH = 1.0f;
 
     private boolean wasUsing = false;
     private int lastSelectedSlot = -1;
@@ -35,21 +33,23 @@ public class OrbitalRailgunSoundsSounds {
             return;
 
         boolean focused = client.isWindowFocused();
-        float volume = focused ? DEFAULT_VOLUME : 0.0f;
+        float volumeScope = focused ? 1.0f : 0.0f;
+        float volumeShoot = focused ? 1.0f : 0.0f;
+        float volumeEquip = focused ? 1.0f : 0.0f;
 
-        handleRailgunUsage(client, player, volume);
-        handleRailgunCooldown(player, volume);
-        handleHotbarSwitch(player, volume);
+        handleRailgunUsage(client, player, volumeScope);
+        handleRailgunCooldown(player, volumeShoot);
+        handleHotbarSwitch(player, volumeEquip);
     }
 
-    private void handleRailgunUsage(MinecraftClient client, ClientPlayerEntity player, float volume) {
+    private void handleRailgunUsage(MinecraftClient client, ClientPlayerEntity player, float volumeScope) {
         Item currentItem = player.getActiveItem().getItem();
         boolean isUsingRailgun = !player.getActiveItem().isEmpty() && currentItem == railgunItem;
 
         if (isUsingRailgun) {
             if (!wasUsing) {
-                scopeSoundInstance = PositionedSoundInstance.master(OrbitalRailgunSoundsRegistry.SCOPE_ON, volume,
-                        DEFAULT_PITCH);
+                scopeSoundInstance = PositionedSoundInstance.master(OrbitalRailgunSoundsRegistry.SCOPE_ON, volumeScope,
+                        1.0f);
                 client.getSoundManager().play(scopeSoundInstance);
             }
         } else {
@@ -62,16 +62,17 @@ public class OrbitalRailgunSoundsSounds {
         wasUsing = isUsingRailgun;
     }
 
-    private void handleRailgunCooldown(ClientPlayerEntity player, float volume) {
+    private void handleRailgunCooldown(ClientPlayerEntity player, float volumeShoot) {
         if (railgunItem != null) {
             boolean cooldownNow = player.getItemCooldownManager().isCoolingDown(railgunItem);
+            float pitchShoot = 1.0f;
 
             if (!lastCooldownActive && cooldownNow) {
                 PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
                 buf.writeIdentifier(Registries.SOUND_EVENT.getId(OrbitalRailgunSoundsRegistry.RAILGUN_SHOOT));
                 buf.writeBlockPos(player.getBlockPos());
-                buf.writeFloat(volume);
-                buf.writeFloat(DEFAULT_PITCH);
+                buf.writeFloat(volumeShoot);
+                buf.writeFloat(pitchShoot);
 
                 ClientPlayNetworking.send(OrbitalRailgunSoundsRegistry.PLAY_SOUND_PACKET_ID, buf);
             }
@@ -80,13 +81,13 @@ public class OrbitalRailgunSoundsSounds {
         }
     }
 
-    private void handleHotbarSwitch(ClientPlayerEntity player, float volume) {
+    private void handleHotbarSwitch(ClientPlayerEntity player, float volumeEquip) {
         int selected = player.getInventory().selectedSlot;
         if (lastSelectedSlot != selected) {
             Item heldItem = player.getMainHandStack().getItem();
 
             if (heldItem == railgunItem) {
-                player.playSound(OrbitalRailgunSoundsRegistry.EQUIP, volume, DEFAULT_PITCH);
+                player.playSound(OrbitalRailgunSoundsRegistry.EQUIP, volumeEquip, 1.0f);
             }
 
             lastSelectedSlot = selected;

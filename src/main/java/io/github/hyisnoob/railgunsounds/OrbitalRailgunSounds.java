@@ -25,8 +25,8 @@ public class OrbitalRailgunSounds implements ModInitializer {
                 (server, player, handler, buf, responseSender) -> {
                     SoundEvent sound = Registries.SOUND_EVENT.get(buf.readIdentifier());
                     BlockPos blockPos = buf.readBlockPos();
-                    float volume = buf.readFloat();
-                    float pitch = buf.readFloat();
+                    float volumeShoot = buf.readFloat();
+                    float pitchShoot = buf.readFloat();
 
                     server.execute(() -> {
                         double range = 500.0;
@@ -42,8 +42,8 @@ public class OrbitalRailgunSounds implements ModInitializer {
                                 nearbyPlayer.playSound(
                                         sound,
                                         SoundCategory.PLAYERS,
-                                        volume,
-                                        pitch
+                                        volumeShoot,
+                                        pitchShoot
                                 );
                             }
                         });
