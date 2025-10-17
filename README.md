@@ -1,15 +1,16 @@
 # Orbital Railgun – Sounds Addon
 
 Client-side addon that adds custom sound effects to the [Orbital Railgun](https://modrinth.com/mod/orbital-railgun) mod. It introduces three core sounds—equip (draw), scope-on (start aiming), and fire (when the railgun actually shoots)
+
 ## Download (for players)
 
 - [Go to Modrinth](https://modrinth.com/mod/orbital-railgun-sounds)
 
 ## How to Install
 
-1) Make sure you’re on Minecraft 1.20.1 with Fabric Loader and Fabric API installed.
-2) Install the original mod “Orbital Railgun” by Mishkis (required).
-3) Drop this addon’s `.jar` into your `mods` folder.
+1. Make sure you’re on Minecraft 1.20.1 with Fabric Loader and Fabric API installed.
+2. Install the original mod “Orbital Railgun” by Mishkis (required).
+3. Drop this addon’s `.jar` into your `mods` folder.
 
 This is client-side. You can join servers normally as long as your client has the original mod.
 
@@ -35,4 +36,5 @@ This is client-side. You can join servers normally as long as your client has th
 
 - Original mod: Orbital Railgun by [Mishkis](https://modrinth.com/user/Mishkis)
 - Sound assets: created by Me.
+- Mod Improvements: KingIronMan2011
 - Source code license: CC0 1.0 (see LICENSE)
