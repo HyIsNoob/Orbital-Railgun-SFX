@@ -47,12 +47,6 @@ processResources {
 	filesMatching("fabric.mod.json") {
 		expand "version": inputs.properties.version
 	}
-
-	// Include user-provided .ogg files into the assets of this addon
-	from("src/assets/sounds") {
-		into "assets/orbital_railgun_sounds/sounds"
-		include "**/*.ogg"
-	}
 }
 
 tasks.withType(JavaCompile).configureEach {
