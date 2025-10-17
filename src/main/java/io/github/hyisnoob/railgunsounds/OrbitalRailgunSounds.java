@@ -16,16 +16,22 @@ public class OrbitalRailgunSounds implements ModInitializer {
     public static final Identifier SCOPE_ON_ID = new Identifier(MOD_ID, "scope_on");
     public static final Identifier EQUIP_ID = new Identifier(MOD_ID, "equip");
 
-    public static SoundEvent RAILGUN_SHOOT;
-    public static SoundEvent SCOPE_ON;
-    public static SoundEvent EQUIP;
+    public static final SoundEvent RAILGUN_SHOOT = registerSoundEvent(RAILGUN_SHOOT_ID);
+    public static final SoundEvent SCOPE_ON = registerSoundEvent(SCOPE_ON_ID);
+    public static final SoundEvent EQUIP = registerSoundEvent(EQUIP_ID);
 
     @Override
     public void onInitialize() {
-    RAILGUN_SHOOT = Registry.register(Registries.SOUND_EVENT, RAILGUN_SHOOT_ID, SoundEvent.of(RAILGUN_SHOOT_ID));
-    SCOPE_ON = Registry.register(Registries.SOUND_EVENT, SCOPE_ON_ID, SoundEvent.of(SCOPE_ON_ID));
-    EQUIP = Registry.register(Registries.SOUND_EVENT, EQUIP_ID, SoundEvent.of(EQUIP_ID));
+        LOGGER.info("Orbital Railgun Sounds Addon initialized. Sound events registered.");
+    }
 
-        LOGGER.info("Registered sound events for Orbital Railgun addon");
+    /**
+     * Helper method to register a sound event.
+     *
+     * @param id The Identifier of the sound event.
+     * @return The registered SoundEvent.
+     */
+    private static SoundEvent registerSoundEvent(Identifier id) {
+        return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
     }
 }
