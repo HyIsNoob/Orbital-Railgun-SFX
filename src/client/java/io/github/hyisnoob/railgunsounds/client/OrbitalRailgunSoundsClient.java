@@ -1,6 +1,6 @@
-package com.example.railgunsounds.client;
+package io.github.hyisnoob.railgunsounds.client;
 
-import com.example.railgunsounds.OrbitalRailgunSounds;
+import io.github.hyisnoob.railgunsounds.OrbitalRailgunSounds;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;

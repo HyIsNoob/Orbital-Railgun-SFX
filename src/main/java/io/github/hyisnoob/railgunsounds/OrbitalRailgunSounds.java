@@ -1,4 +1,4 @@
-package com.example.railgunsounds;
+package io.github.hyisnoob.railgunsounds;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.registry.Registries;

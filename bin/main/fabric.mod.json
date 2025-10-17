@@ -12,10 +12,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.example.railgunsounds.OrbitalRailgunSounds"
+      "io.github.hyisnoob.railgunsounds.OrbitalRailgunSounds"
     ],
     "client": [
-      "com.example.railgunsounds.client.OrbitalRailgunSoundsClient"
+      "io.github.hyisnoob.railgunsounds.client.OrbitalRailgunSoundsClient"
     ]
   },
   "mixins": [

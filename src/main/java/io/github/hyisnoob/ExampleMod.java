@@ -1,4 +1,4 @@
-package com.example;
+package io.github.hyisnoob;
 
 import net.fabricmc.api.ModInitializer;
 
