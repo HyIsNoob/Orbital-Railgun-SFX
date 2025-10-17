@@ -5,8 +5,8 @@ import java.util.logging.Logger;
 import io.github.hyisnoob.railgunsounds.registry.OrbitalRailgunSoundsRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.registry.Registries;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -29,13 +29,24 @@ public class OrbitalRailgunSounds implements ModInitializer {
                     float pitch = buf.readFloat();
 
                     server.execute(() -> {
-                        player.getWorld().playSound(
-                                null,
-                                blockPos,
-                                sound,
-                                SoundCategory.PLAYERS,
-                                volume,
-                                pitch);
+                        double range = 500.0;
+                        double rangeSquared = range * range;
+
+                        player.getWorld().getPlayers().forEach(nearbyPlayer -> {
+                            double distanceSquared = nearbyPlayer.squaredDistanceTo(
+                                    blockPos.getX() + 0.5,
+                                    blockPos.getY() + 0.5,
+                                    blockPos.getZ() + 0.5
+                            );
+                            if (distanceSquared <= rangeSquared) {
+                                nearbyPlayer.playSound(
+                                        sound,
+                                        SoundCategory.PLAYERS,
+                                        volume,
+                                        pitch
+                                );
+                            }
+                        });
                     });
                 });
     }
