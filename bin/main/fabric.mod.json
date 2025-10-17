@@ -15,7 +15,7 @@
       "io.github.hyisnoob.railgunsounds.OrbitalRailgunSounds"
     ],
     "client": [
-      "io.github.hyisnoob.railgunsounds.client.OrbitalRailgunSoundsClient"
+      "io.github.hyisnoob.railgunsounds.OrbitalRailgunSoundsClient"
     ]
   },
   "depends": {
