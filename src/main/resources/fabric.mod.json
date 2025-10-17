@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "orbital_railgun_sounds",
   "version": "${version}",
-  "name": "Orbital Railgun - Sounds Addon",
+  "name": "Orbital Railgun SFX",
   "description": "Adds custom sound effects (scope-on, railgun shoot) to the Orbital Railgun mod.",
   "authors": ["HyisNoob"],
   "license": "CC0-1.0",
