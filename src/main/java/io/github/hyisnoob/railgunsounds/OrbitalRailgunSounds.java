@@ -22,7 +22,7 @@ public class OrbitalRailgunSounds implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Orbital Railgun Sounds Addon initialized. Sound events registered.");
+        LOGGER.info("Orbital Railgun Sounds Addon initialized. Sound events registered");
     }
 
     /**

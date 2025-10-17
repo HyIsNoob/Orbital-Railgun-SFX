@@ -11,6 +11,9 @@ import net.minecraft.util.Identifier;
 
 public class OrbitalRailgunSoundsClient implements ClientModInitializer {
     private static final Identifier ORBITAL_RAILGUN_ITEM_ID = new Identifier("orbital_railgun", "orbital_railgun");
+    private static final float DEFAULT_VOLUME = 1.0f;
+    private static final float DEFAULT_PITCH = 1.0f;
+
     private boolean wasUsing = false;
     private int lastSelectedSlot = -1;
     private boolean lastCooldownActive = false;
@@ -18,48 +21,66 @@ public class OrbitalRailgunSoundsClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        // cache the railgun item instance
+        // Cache the railgun item instance
         railgunItem = Registries.ITEM.get(ORBITAL_RAILGUN_ITEM_ID);
         ClientTickEvents.END_CLIENT_TICK.register(this::onEndTick);
     }
 
     private void onEndTick(MinecraftClient client) {
         ClientPlayerEntity player = client.player;
-        if (player == null) return;
-        if (client.world == null) return;
-    boolean focused = client.isWindowFocused();
-    float vol = focused ? 1.0f : 0.0f;
+        if (player == null || client.world == null) return;
 
+        // Check if the game window is focused and adjust volume
+        boolean focused = client.isWindowFocused();
+        float volume = focused ? DEFAULT_VOLUME : 0.0f;
+
+        // Play sounds based on player actions
+        handleRailgunUsage(player, volume);
+        handleRailgunCooldown(player, volume);
+        handleHotbarSwitch(player, volume);
+    }
+
+    private void handleRailgunUsage(ClientPlayerEntity player, float volume) {
+        // Check if the player is using the railgun
         Item currentItem = player.getActiveItem().getItem();
-        boolean isUsingRailgun = !player.getActiveItem().isEmpty() && Registries.ITEM.getId(currentItem).equals(ORBITAL_RAILGUN_ITEM_ID);
+        boolean isUsingRailgun = !player.getActiveItem().isEmpty() && currentItem == railgunItem;
 
-        // Play scope_on when starting to use the railgun
+        // Play "scope_on" sound when starting to use the railgun
         if (isUsingRailgun && !wasUsing) {
-            // Keep playback timeline even when unfocused by using volume 0
-            player.playSound(OrbitalRailgunSounds.SCOPE_ON, vol, 1.0f);
+            player.playSound(OrbitalRailgunSounds.SCOPE_ON, volume, DEFAULT_PITCH);
         }
 
-        // Play shoot sound only when the railgun actually fires: detect cooldown start
+        // Update usage state
+        wasUsing = isUsingRailgun;
+    }
+
+    private void handleRailgunCooldown(ClientPlayerEntity player, float volume) {
+        // Check if the railgun is on cooldown
         if (railgunItem != null) {
             boolean cooldownNow = player.getItemCooldownManager().isCoolingDown(railgunItem);
+
+            // Play "railgun_shoot" sound when cooldown starts
             if (!lastCooldownActive && cooldownNow) {
-                // Keep playback timeline even when unfocused by using volume 0
-                player.playSound(OrbitalRailgunSounds.RAILGUN_SHOOT, vol, 1.0f);
+                player.playSound(OrbitalRailgunSounds.RAILGUN_SHOOT, volume, DEFAULT_PITCH);
             }
+
+            // Update cooldown state
             lastCooldownActive = cooldownNow;
         }
+    }
 
-        // Update using state after processing
-        wasUsing = isUsingRailgun;
-
-        // Play equip sound when switching to the Orbital Railgun in hotbar
+    private void handleHotbarSwitch(ClientPlayerEntity player, float volume) {
+        // Check if the player switched hotbar slots
         int selected = player.getInventory().selectedSlot;
         if (lastSelectedSlot != selected) {
-            Item held = player.getMainHandStack().getItem();
-            if (Registries.ITEM.getId(held).equals(ORBITAL_RAILGUN_ITEM_ID)) {
-                // Keep playback timeline even when unfocused by using volume 0
-                player.playSound(OrbitalRailgunSounds.EQUIP, vol, 1.0f);
+            Item heldItem = player.getMainHandStack().getItem();
+
+            // Play "equip" sound when switching to the railgun
+            if (heldItem == railgunItem) {
+                player.playSound(OrbitalRailgunSounds.EQUIP, volume, DEFAULT_PITCH);
             }
+
+            // Update selected slot
             lastSelectedSlot = selected;
         }
     }
