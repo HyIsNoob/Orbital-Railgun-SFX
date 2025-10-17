@@ -1,7 +1,7 @@
-package io.github.hyisnoob.railgunsounds;
+package io.github.hyisnoob.railgunsounds.client.sounds;
 
 import io.netty.buffer.Unpooled;
-import net.fabricmc.api.ClientModInitializer;
+import io.github.hyisnoob.railgunsounds.registry.OrbitalRailgunSoundsRegistry;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -12,7 +12,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
-public class OrbitalRailgunSoundsClient implements ClientModInitializer {
+public class OrbitalRailgunSoundsSounds {
     private static final Identifier ORBITAL_RAILGUN_ITEM_ID = new Identifier("orbital_railgun", "orbital_railgun");
     private static final float DEFAULT_VOLUME = 1.0f;
     private static final float DEFAULT_PITCH = 1.0f;
@@ -24,8 +24,7 @@ public class OrbitalRailgunSoundsClient implements ClientModInitializer {
 
     private PositionedSoundInstance scopeSoundInstance;
 
-    @Override
-    public void onInitializeClient() {
+    public void initializeClient() {
         railgunItem = Registries.ITEM.get(ORBITAL_RAILGUN_ITEM_ID);
         ClientTickEvents.END_CLIENT_TICK.register(this::onEndTick);
     }
@@ -49,7 +48,7 @@ public class OrbitalRailgunSoundsClient implements ClientModInitializer {
 
         if (isUsingRailgun) {
             if (!wasUsing) {
-                scopeSoundInstance = PositionedSoundInstance.master(OrbitalRailgunSounds.SCOPE_ON, volume,
+                scopeSoundInstance = PositionedSoundInstance.master(OrbitalRailgunSoundsRegistry.SCOPE_ON, volume,
                         DEFAULT_PITCH);
                 client.getSoundManager().play(scopeSoundInstance);
             }
@@ -69,12 +68,12 @@ public class OrbitalRailgunSoundsClient implements ClientModInitializer {
 
             if (!lastCooldownActive && cooldownNow) {
                 PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-                buf.writeIdentifier(Registries.SOUND_EVENT.getId(OrbitalRailgunSounds.RAILGUN_SHOOT));
+                buf.writeIdentifier(Registries.SOUND_EVENT.getId(OrbitalRailgunSoundsRegistry.RAILGUN_SHOOT));
                 buf.writeBlockPos(player.getBlockPos());
                 buf.writeFloat(volume);
                 buf.writeFloat(DEFAULT_PITCH);
 
-                ClientPlayNetworking.send(OrbitalRailgunSounds.PLAY_SOUND_PACKET_ID, buf);
+                ClientPlayNetworking.send(OrbitalRailgunSoundsRegistry.PLAY_SOUND_PACKET_ID, buf);
             }
 
             lastCooldownActive = cooldownNow;
@@ -87,7 +86,7 @@ public class OrbitalRailgunSoundsClient implements ClientModInitializer {
             Item heldItem = player.getMainHandStack().getItem();
 
             if (heldItem == railgunItem) {
-                player.playSound(OrbitalRailgunSounds.EQUIP, volume, DEFAULT_PITCH);
+                player.playSound(OrbitalRailgunSoundsRegistry.EQUIP, volume, DEFAULT_PITCH);
             }
 
             lastSelectedSlot = selected;

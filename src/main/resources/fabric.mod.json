@@ -10,7 +10,7 @@
   "environment": "*",
   "entrypoints": {
     "main": ["io.github.hyisnoob.railgunsounds.OrbitalRailgunSounds"],
-    "client": ["io.github.hyisnoob.railgunsounds.OrbitalRailgunSoundsClient"]
+    "client": ["io.github.hyisnoob.railgunsounds.client.OrbitalRailgunSoundsClient"]
   },
   "depends": {
     "fabricloader": ">=0.17.2",
