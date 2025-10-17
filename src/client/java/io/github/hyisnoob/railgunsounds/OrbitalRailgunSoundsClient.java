@@ -4,6 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
@@ -17,6 +18,8 @@ public class OrbitalRailgunSoundsClient implements ClientModInitializer {
     private int lastSelectedSlot = -1;
     private boolean lastCooldownActive = false;
     private Item railgunItem;
+
+    private PositionedSoundInstance scopeSoundInstance;
 
     @Override
     public void onInitializeClient() {
@@ -33,20 +36,29 @@ public class OrbitalRailgunSoundsClient implements ClientModInitializer {
         boolean focused = client.isWindowFocused();
         float volume = focused ? DEFAULT_VOLUME : 0.0f;
 
-        // Play sounds based on player actions
-        handleRailgunUsage(player, volume);
+        // Play or stop sounds based on player actions
+        handleRailgunUsage(client, player, volume);
         handleRailgunCooldown(player, volume);
         handleHotbarSwitch(player, volume);
     }
 
-    private void handleRailgunUsage(ClientPlayerEntity player, float volume) {
+    private void handleRailgunUsage(MinecraftClient client, ClientPlayerEntity player, float volume) {
         // Check if the player is using the railgun
         Item currentItem = player.getActiveItem().getItem();
         boolean isUsingRailgun = !player.getActiveItem().isEmpty() && currentItem == railgunItem;
 
-        // Play "scope_on" sound when starting to use the railgun
-        if (isUsingRailgun && !wasUsing) {
-            player.playSound(OrbitalRailgunSounds.SCOPE_ON, volume, DEFAULT_PITCH);
+        if (isUsingRailgun) {
+            // Play "scope_on" sound when starting to use the railgun
+            if (!wasUsing) {
+                scopeSoundInstance = PositionedSoundInstance.master(OrbitalRailgunSounds.SCOPE_ON, volume, DEFAULT_PITCH);
+                client.getSoundManager().play(scopeSoundInstance);
+            }
+        } else {
+            // Stop "scope_on" sound when the player stops using the railgun
+            if (wasUsing && scopeSoundInstance != null) {
+                client.getSoundManager().stop(scopeSoundInstance);
+                scopeSoundInstance = null;
+            }
         }
 
         // Update usage state
