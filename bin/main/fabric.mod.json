@@ -18,5 +18,12 @@
     "java": ">=17",
     "fabric-api": "*",
     "orbital_railgun": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.source": "https://github.com/HyIsNoob/Orbital-Railgun-SFX"
+      }
+    }
   }
 }
