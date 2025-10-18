@@ -1,7 +1,7 @@
 package io.github.hyisnoob.railgunsounds.client.sounds;
 
 import io.github.hyisnoob.railgunsounds.client.OrbitalRailgunSoundsClient;
-import io.github.hyisnoob.railgunsounds.registry.OrbitalRailgunSoundsRegistry;
+import io.github.hyisnoob.railgunsounds.registry.SoundsRegistry;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -52,7 +52,7 @@ public class OrbitalRailgunSoundsSounds {
         if (isUsingRailgun) {
             if (!wasUsing && OrbitalRailgunSoundsClient.CONFIG.enableScopeSound()) {
                 scopeSoundInstance = new PositionedSoundInstance(
-                        OrbitalRailgunSoundsRegistry.SCOPE_ON.getId(),
+                        SoundsRegistry.SCOPE_ON.getId(),
                         SoundCategory.MASTER,
                         volumeScope,
                         1.0f,
@@ -84,12 +84,12 @@ public class OrbitalRailgunSoundsSounds {
 
             if (!lastCooldownActive && cooldownNow && OrbitalRailgunSoundsClient.CONFIG.enableShootSound()) {
                 PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-                buf.writeIdentifier(Registries.SOUND_EVENT.getId(OrbitalRailgunSoundsRegistry.RAILGUN_SHOOT));
+                buf.writeIdentifier(Registries.SOUND_EVENT.getId(SoundsRegistry.RAILGUN_SHOOT));
                 buf.writeBlockPos(player.getBlockPos());
                 buf.writeFloat(volumeShoot);
                 buf.writeFloat(pitchShoot);
 
-                ClientPlayNetworking.send(OrbitalRailgunSoundsRegistry.PLAY_SOUND_PACKET_ID, buf);
+                ClientPlayNetworking.send(SoundsRegistry.PLAY_SOUND_PACKET_ID, buf);
             }
 
             lastCooldownActive = cooldownNow;
@@ -102,7 +102,7 @@ public class OrbitalRailgunSoundsSounds {
             Item heldItem = player.getMainHandStack().getItem();
 
             if (heldItem == railgunItem && OrbitalRailgunSoundsClient.CONFIG.enableEquipSound()) {
-                player.playSound(OrbitalRailgunSoundsRegistry.EQUIP, volumeEquip, 1.0f);
+                player.playSound(SoundsRegistry.EQUIP, volumeEquip, 1.0f);
             }
 
             lastSelectedSlot = selected;

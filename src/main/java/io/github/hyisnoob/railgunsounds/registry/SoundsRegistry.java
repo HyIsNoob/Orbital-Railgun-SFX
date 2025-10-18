@@ -5,7 +5,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
-public class OrbitalRailgunSoundsRegistry {
+public class SoundsRegistry {
     public static final String MOD_ID = "orbital_railgun_sounds";
     public static final Identifier PLAY_SOUND_PACKET_ID = new Identifier(MOD_ID, "play_sound");
 

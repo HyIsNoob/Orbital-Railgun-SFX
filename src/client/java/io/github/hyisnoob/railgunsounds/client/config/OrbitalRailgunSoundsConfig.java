@@ -17,8 +17,7 @@ public class OrbitalRailgunSoundsConfig {
     
     @RangeConstraint(min = 0.0, max = 1.0)
     public double equipVolume = 1.0;
-    
-    // Enable/disable settings
+
     public boolean enableScopeSound = true;
     public boolean enableShootSound = true;
     public boolean enableEquipSound = true;
