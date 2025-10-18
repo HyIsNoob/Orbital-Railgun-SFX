@@ -6,33 +6,17 @@
         "name": "orbital_railgun_sounds:railgun-shoot",
         "volume": 1.0,
         "pitch": 1.0,
-        "attenuation_distance": 64
+        "attenuation_distance": 500
       }
     ],
     "category": "player"
   },
   "scope_on": {
     "subtitle": "subtitle.orbital_railgun_sounds.scope_on",
-    "sounds": [
-      {
-        "name": "orbital_railgun_sounds:scope-on",
-        "volume": 1.0,
-        "pitch": 1.0,
-        "attenuation_distance": 16
-      }
-    ],
-    "category": "player"
+    "sounds": ["orbital_railgun_sounds:scope-on"]
   },
   "equip": {
     "subtitle": "subtitle.orbital_railgun_sounds.equip",
-    "sounds": [
-      {
-        "name": "orbital_railgun_sounds:equip",
-        "volume": 1.0,
-        "pitch": 1.0,
-        "attenuation_distance": 8
-      }
-    ],
-    "category": "player"
+    "sounds": ["orbital_railgun_sounds:equip"]
   }
 }

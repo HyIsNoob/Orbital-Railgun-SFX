@@ -53,16 +53,16 @@ public class OrbitalRailgunSoundsSounds {
             if (!wasUsing && OrbitalRailgunSoundsClient.CONFIG.enableScopeSound()) {
                 scopeSoundInstance = new PositionedSoundInstance(
                         SoundsRegistry.SCOPE_ON.getId(),
-                        SoundCategory.PLAYERS,
+                        SoundCategory.MASTER,
                         volumeScope,
                         1.0f,
                         SoundInstance.createRandom(),
                         false,
                         0,
-                        SoundInstance.AttenuationType.LINEAR,
-                        player.getX(),
-                        player.getY(),
-                        player.getZ(),
+                        SoundInstance.AttenuationType.NONE,
+                        0.0,
+                        0.0,
+                        0.0,
                         true
                 );
                 client.getSoundManager().play(scopeSoundInstance);
