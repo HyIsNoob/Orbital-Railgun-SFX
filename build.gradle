@@ -38,8 +38,6 @@ dependencies {
     // owo-lib for configuration
     modImplementation "io.wispforest:owo-lib:0.11.2+1.20"
     include "io.wispforest:owo-lib:0.11.2+1.20"
-    
-    // Annotation processor for both main and client source sets
     annotationProcessor "io.wispforest:owo-lib:0.11.2+1.20"
     clientAnnotationProcessor "io.wispforest:owo-lib:0.11.2+1.20"
 }
