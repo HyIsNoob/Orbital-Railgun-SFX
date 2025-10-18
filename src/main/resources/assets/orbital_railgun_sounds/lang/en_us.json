@@ -1,5 +1,13 @@
 {
   "subtitle.orbital_railgun_sounds.railgun_shoot": "Orbital railgun fires",
   "subtitle.orbital_railgun_sounds.scope_on": "Scope online",
-  "subtitle.orbital_railgun_sounds.equip": "Orbital railgun equipped"
+  "subtitle.orbital_railgun_sounds.equip": "Orbital railgun equipped",
+  
+  "text.config.orbital-railgun-sounds.title": "Orbital Railgun Sounds Config",
+  "text.config.orbital-railgun-sounds.option.scopeVolume": "Scope Volume",
+  "text.config.orbital-railgun-sounds.option.shootVolume": "Shoot Volume",
+  "text.config.orbital-railgun-sounds.option.equipVolume": "Equip Volume",
+  "text.config.orbital-railgun-sounds.option.enableScopeSound": "Enable Scope Sound",
+  "text.config.orbital-railgun-sounds.option.enableShootSound": "Enable Shoot Sound",
+  "text.config.orbital-railgun-sounds.option.enableEquipSound": "Enable Equip Sound"
 }

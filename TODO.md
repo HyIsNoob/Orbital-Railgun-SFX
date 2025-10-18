@@ -7,8 +7,8 @@
 
 ## Customizable Sound Settings
 
-- [ ] Add a config file to adjust the volume of individual sounds (e.g., scope-on, railgun shoot).
-- [ ] Allow players to enable or disable specific sound effects.
+- [x] Add a config file to adjust the volume of individual sounds (e.g., scope-on, railgun shoot).
+- [x] Allow players to enable or disable specific sound effects.
 
 ## Multiplayer Enhancements
 

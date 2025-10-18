@@ -19,6 +19,7 @@ This is client-side. You can join servers normally as long as your client has th
 - Equip: plays when switching to the Orbital Railgun in your hotbar.
 - Scope-on: plays when you begin aiming (hold right-click).
 - Fire: plays when the railgun actually fires (at cooldown start), not simply on release.
+- **Customizable Settings**: Adjust volume for each sound or enable/disable specific sound effects via the config menu (accessible through Mod Menu).
 
 ## Requirements
 
@@ -26,6 +27,16 @@ This is client-side. You can join servers normally as long as your client has th
 - Fabric Loader + Fabric API
 - Original mod: Orbital Railgun by [Mishkis](https://modrinth.com/user/Mishkis)
   - Mod page: <https://modrinth.com/mod/orbital-railgun>
+- owo-lib (included in the mod)
+- Mod Menu (optional, for easy config access)
+
+## Configuration
+
+Access the config screen through Mod Menu (if installed) to customize:
+- **Volume Settings**: Adjust the volume for each sound (scope, shoot, equip) from 0.0 to 1.0
+- **Enable/Disable Sounds**: Toggle individual sound effects on or off
+
+Configuration is stored in `config/orbital-railgun-sounds.json5` in your Minecraft directory.
 
 ## Notes
 
