@@ -22,7 +22,8 @@
   },
   "suggests": {
     "sound_physics_remastered": "*",
-    "dynamicsurroundings": "*"
+    "dynamicsurroundings": "*",
+    "modmenu": "*"
   },
   "custom": {
     "modmenu": {
