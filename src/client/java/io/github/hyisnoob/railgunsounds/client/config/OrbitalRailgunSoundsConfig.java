@@ -21,6 +21,4 @@ public class OrbitalRailgunSoundsConfig {
     public boolean enableScopeSound = true;
     public boolean enableShootSound = true;
     public boolean enableEquipSound = true;
-
-    public boolean debugMode = false;
 }

@@ -20,4 +20,4 @@
 
 ## Debugging or Testing Features
 
-- [ ] Add a debug mode that logs sound events to the console for testing sound propagation and range.
+- [x] Add a debug mode that logs sound events to the console for testing sound propagation and range.
