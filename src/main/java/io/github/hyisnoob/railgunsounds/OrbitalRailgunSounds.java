@@ -45,13 +45,20 @@ public class OrbitalRailgunSounds implements ModInitializer {
                                     blockPos.getZ() + 0.5
                             );
                             if (distanceSquared <= rangeSquared) {
+                                // Calculate distance-based volume attenuation
+                                double distance = Math.sqrt(distanceSquared);
+                                // Linear attenuation: volume decreases linearly from max at origin to 0 at max range
+                                float attenuatedVolume = (float) (volumeShoot * (1.0 - (distance / range)));
+                                // Ensure volume is at least a minimum value for very close sounds
+                                attenuatedVolume = Math.max(0.1f, Math.min(volumeShoot, attenuatedVolume));
+                                
                                 nearbyPlayer.playSound(
                                         sound,
                                         SoundCategory.PLAYERS,
-                                        volumeShoot,
+                                        attenuatedVolume,
                                         pitchShoot
                                 );
-                                SoundLogger.logSoundEvent(sound.getId().toString(), blockPos, range);
+                                SoundLogger.logSoundEvent(sound.getId().toString(), blockPos, range, distance, attenuatedVolume);
                             }
                         });
                     });

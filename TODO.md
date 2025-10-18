@@ -3,7 +3,7 @@
 ## Dynamic Sound Effects
 
 - [ ] Add reverb or echo effects for railgun sounds in specific environments (e.g., caves, open fields, underwater).
-- [ ] Implement directional sounds to make the sound louder or quieter based on the player's position relative to the firing location.
+- [x] Implement directional sounds to make the sound louder or quieter based on the player's position relative to the firing location.
 
 ## Customizable Sound Settings
 
