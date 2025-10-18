@@ -1,5 +1,6 @@
 package io.github.hyisnoob.railgunsounds.client.sounds;
 
+import io.github.hyisnoob.railgunsounds.client.OrbitalRailgunSoundsClient;
 import io.github.hyisnoob.railgunsounds.registry.OrbitalRailgunSoundsRegistry;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -33,9 +34,9 @@ public class OrbitalRailgunSoundsSounds {
             return;
 
         boolean focused = client.isWindowFocused();
-        float volumeScope = focused ? 1.0f : 0.0f;
-        float volumeShoot = focused ? 1.0f : 0.0f;
-        float volumeEquip = focused ? 1.0f : 0.0f;
+        float volumeScope = focused ? (float) OrbitalRailgunSoundsClient.CONFIG.scopeVolume() : 0.0f;
+        float volumeShoot = focused ? (float) OrbitalRailgunSoundsClient.CONFIG.shootVolume() : 0.0f;
+        float volumeEquip = focused ? (float) OrbitalRailgunSoundsClient.CONFIG.equipVolume() : 0.0f;
 
         handleRailgunUsage(client, player, volumeScope);
         handleRailgunCooldown(player, volumeShoot);
@@ -47,7 +48,7 @@ public class OrbitalRailgunSoundsSounds {
         boolean isUsingRailgun = !player.getActiveItem().isEmpty() && currentItem == railgunItem;
 
         if (isUsingRailgun) {
-            if (!wasUsing) {
+            if (!wasUsing && OrbitalRailgunSoundsClient.CONFIG.enableScopeSound()) {
                 scopeSoundInstance = PositionedSoundInstance.master(OrbitalRailgunSoundsRegistry.SCOPE_ON, volumeScope,
                         1.0f);
                 client.getSoundManager().play(scopeSoundInstance);
@@ -67,7 +68,7 @@ public class OrbitalRailgunSoundsSounds {
             boolean cooldownNow = player.getItemCooldownManager().isCoolingDown(railgunItem);
             float pitchShoot = 1.0f;
 
-            if (!lastCooldownActive && cooldownNow) {
+            if (!lastCooldownActive && cooldownNow && OrbitalRailgunSoundsClient.CONFIG.enableShootSound()) {
                 PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
                 buf.writeIdentifier(Registries.SOUND_EVENT.getId(OrbitalRailgunSoundsRegistry.RAILGUN_SHOOT));
                 buf.writeBlockPos(player.getBlockPos());
@@ -86,7 +87,7 @@ public class OrbitalRailgunSoundsSounds {
         if (lastSelectedSlot != selected) {
             Item heldItem = player.getMainHandStack().getItem();
 
-            if (heldItem == railgunItem) {
+            if (heldItem == railgunItem && OrbitalRailgunSoundsClient.CONFIG.enableEquipSound()) {
                 player.playSound(OrbitalRailgunSoundsRegistry.EQUIP, volumeEquip, 1.0f);
             }
 
