@@ -8,9 +8,11 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 
 public class OrbitalRailgunSoundsSounds {
@@ -49,8 +51,20 @@ public class OrbitalRailgunSoundsSounds {
 
         if (isUsingRailgun) {
             if (!wasUsing && OrbitalRailgunSoundsClient.CONFIG.enableScopeSound()) {
-                scopeSoundInstance = PositionedSoundInstance.master(OrbitalRailgunSoundsRegistry.SCOPE_ON, volumeScope,
-                        1.0f);
+                scopeSoundInstance = new PositionedSoundInstance(
+                        OrbitalRailgunSoundsRegistry.SCOPE_ON.getId(),
+                        SoundCategory.MASTER,
+                        volumeScope,
+                        1.0f,
+                        SoundInstance.createRandom(),
+                        false,
+                        0,
+                        SoundInstance.AttenuationType.NONE,
+                        0.0,
+                        0.0,
+                        0.0,
+                        true
+                );
                 client.getSoundManager().play(scopeSoundInstance);
             }
         } else {
