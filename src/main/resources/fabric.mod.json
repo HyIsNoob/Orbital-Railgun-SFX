@@ -6,7 +6,7 @@
   "description": "Adds custom sound effects (scope-on, railgun shoot) to the Orbital Railgun mod.",
   "authors": ["HyisNoob"],
   "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/orbital_railgun_sounds/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": ["io.github.hyisnoob.railgunsounds.OrbitalRailgunSounds"],
@@ -17,7 +17,8 @@
     "minecraft": "1.20.1",
     "java": ">=17",
     "fabric-api": "*",
-    "orbital_railgun": "*"
+    "orbital_railgun": "*",
+    "owo": ">=0.11.0"
   },
   "custom": {
     "modmenu": {
