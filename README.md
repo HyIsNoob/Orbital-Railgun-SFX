@@ -33,8 +33,8 @@ This is client-side. You can join servers normally as long as your client has th
 ## Configuration
 
 Access the config screen through Mod Menu (if installed) to customize:
-- **Volume Settings**: Adjust the volume for each sound (scope, shoot, equip) from 0.0 to 1.0
-- **Enable/Disable Sounds**: Toggle individual sound effects on or off
+- Volume Settings: Adjust the volume for each sound (scope, shoot, equip) from 0.0 to 1.0
+- Enable/Disable Sounds: Toggle individual sound effects on or off
 
 Configuration is stored in `config/orbital-railgun-sounds.json5` in your Minecraft directory.
 
