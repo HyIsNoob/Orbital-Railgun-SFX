@@ -47,5 +47,5 @@ Configuration is stored in `config/orbital-railgun-sounds.json5` in your Minecra
 
 - Original mod: Orbital Railgun by [Mishkis](https://modrinth.com/user/Mishkis)
 - Sound assets: created by Me.
-- Mod Improvements: KingIronMan2011
+- Mod Improvements and new features: KingIronMan2011
 - Source code license: CC0 1.0 (see LICENSE)
