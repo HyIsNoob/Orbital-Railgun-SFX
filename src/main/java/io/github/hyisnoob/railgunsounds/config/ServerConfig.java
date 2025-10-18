@@ -11,14 +11,24 @@ import java.io.IOException;
 public class ServerConfig {
     private static final File CONFIG_FILE = new File("config/orbital-railgun-sounds-server-config.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    public static final ServerConfig INSTANCE = new ServerConfig();
     private boolean debugMode = false;
+    private double soundRange = 500.0;
 
     public boolean isDebugMode() {
         return debugMode;
     }
+    public double getSoundRange() {
+        return soundRange;
+    }
 
     public void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
+        saveConfig();
+    }
+
+    public void setSoundRange(double soundRange) {
+        this.soundRange = soundRange;
         saveConfig();
     }
 
@@ -27,6 +37,7 @@ public class ServerConfig {
             try (FileReader reader = new FileReader(CONFIG_FILE)) {
                 ServerConfig config = GSON.fromJson(reader, ServerConfig.class);
                 this.debugMode = config.debugMode;
+                this.soundRange = config.soundRange;
             } catch (IOException e) {
                 System.err.println("Failed to load config: " + e.getMessage());
             }

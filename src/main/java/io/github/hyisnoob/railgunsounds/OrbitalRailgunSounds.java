@@ -43,7 +43,7 @@ public class OrbitalRailgunSounds implements ModInitializer {
                             return;
                         }
 
-                        double range = 500.0;
+                        double range = ServerConfig.INSTANCE.getSoundRange();
                         double rangeSquared = range * range;
 
                         player.getWorld().getPlayers().forEach(nearbyPlayer -> {
