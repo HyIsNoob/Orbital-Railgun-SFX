@@ -16,7 +16,7 @@
 
 ## Compatibility with Other Mods
 
-- [ ] Add compatibility with **Dynamic Surroundings** or **Sound Physics Remastered** to enhance the audio experience.
+- [x] Add compatibility with **Dynamic Surroundings** or **Sound Physics Remastered** to enhance the audio experience.
 
 ## Debugging or Testing Features
 
