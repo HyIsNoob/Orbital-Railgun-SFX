@@ -20,6 +20,10 @@
     "orbital_railgun": "*",
     "owo": ">=0.11.0"
   },
+  "suggests": {
+    "sound_physics_remastered": "*",
+    "dynamicsurroundings": "*"
+  },
   "custom": {
     "modmenu": {
       "links": {

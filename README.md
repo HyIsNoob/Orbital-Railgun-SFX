@@ -20,6 +20,7 @@ This is client-side. You can join servers normally as long as your client has th
 - Scope-on: plays when you begin aiming (hold right-click).
 - Fire: plays when the railgun actually fires (at cooldown start), not simply on release.
 - Customizable Settings: Adjust volume for each sound or enable/disable specific sound effects via the config menu (accessible through Mod Menu).
+- Enhanced Audio: Compatible with **Sound Physics Remastered** and **Dynamic Surroundings** for realistic sound effects with reverb, echo, and environmental audio.
 
 ## Requirements
 
@@ -29,6 +30,8 @@ This is client-side. You can join servers normally as long as your client has th
   - Mod page: <https://modrinth.com/mod/orbital-railgun>
 - owo-lib (included in the mod)
 - Mod Menu (optional, for easy config access)
+- Sound Physics Remastered (optional, for enhanced audio effects)
+- Dynamic Surroundings (optional, for environmental audio enhancement)
 
 ## Configuration
 

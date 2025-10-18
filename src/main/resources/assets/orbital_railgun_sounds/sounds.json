@@ -1,14 +1,38 @@
 {
   "railgun_shoot": {
     "subtitle": "subtitle.orbital_railgun_sounds.railgun_shoot",
-    "sounds": ["orbital_railgun_sounds:railgun-shoot"]
+    "sounds": [
+      {
+        "name": "orbital_railgun_sounds:railgun-shoot",
+        "volume": 1.0,
+        "pitch": 1.0,
+        "attenuation_distance": 64
+      }
+    ],
+    "category": "player"
   },
   "scope_on": {
     "subtitle": "subtitle.orbital_railgun_sounds.scope_on",
-    "sounds": ["orbital_railgun_sounds:scope-on"]
+    "sounds": [
+      {
+        "name": "orbital_railgun_sounds:scope-on",
+        "volume": 1.0,
+        "pitch": 1.0,
+        "attenuation_distance": 16
+      }
+    ],
+    "category": "player"
   },
   "equip": {
     "subtitle": "subtitle.orbital_railgun_sounds.equip",
-    "sounds": ["orbital_railgun_sounds:equip"]
+    "sounds": [
+      {
+        "name": "orbital_railgun_sounds:equip",
+        "volume": 1.0,
+        "pitch": 1.0,
+        "attenuation_distance": 8
+      }
+    ],
+    "category": "player"
   }
 }
