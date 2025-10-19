@@ -10,6 +10,7 @@ import io.github.hyisnoob.railgunsounds.config.ServerConfig;
 import io.github.hyisnoob.railgunsounds.listener.PlayerAreaListener;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
@@ -39,6 +40,11 @@ public class OrbitalRailgunSounds implements ModInitializer {
         LOGGER.info("Debug mode: {}", ServerConfig.INSTANCE.isDebugMode());
         LOGGER.info("Sound range: {}", ServerConfig.INSTANCE.getSoundRange());
         LOGGER.info("=================================================");
+        
+        // Register callback for area state changes detected by periodic checks
+        PlayerAreaListener.setAreaChangeCallback(event -> {
+            handleAreaStateChange(event.player, event.result, event.laserX, event.laserZ);
+        });
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             PlayerAreaListener.clearPlayerState(handler.getPlayer().getUuid());
@@ -150,6 +156,17 @@ public class OrbitalRailgunSounds implements ModInitializer {
                     LOGGER.info("========================================");
                 }
             });
+        });
+        
+        // Register server tick event to check player positions periodically
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            // Check every 20 ticks (1 second) to reduce overhead
+            if (server.getTicks() % 20 == 0) {
+                server.getPlayerManager().getPlayerList().forEach(player -> {
+                    // Check all tracked locations for this player
+                    PlayerAreaListener.checkPlayerPosition(player);
+                });
+            }
         });
     }
 

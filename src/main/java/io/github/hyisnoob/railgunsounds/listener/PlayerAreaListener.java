@@ -3,6 +3,7 @@ package io.github.hyisnoob.railgunsounds.listener;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public class PlayerAreaListener {
     private static final Logger LOGGER = LoggerFactory.getLogger("orbital_railgun_sounds");
     private static final Map<UUID, AreaState> playerStates = new ConcurrentHashMap<>();
+    private static Consumer<AreaChangeEvent> areaChangeCallback = null;
 
     /**
      * Tracks state for a player in relation to a laser impact area
@@ -112,6 +114,56 @@ public class PlayerAreaListener {
      */
     public static void clearAllStates() {
         playerStates.clear();
+    }
+    
+    /**
+     * Sets a callback to be invoked when a player's area state changes.
+     */
+    public static void setAreaChangeCallback(Consumer<AreaChangeEvent> callback) {
+        areaChangeCallback = callback;
+    }
+    
+    /**
+     * Periodically checks if a player's position has changed relative to tracked laser locations.
+     * This is called from a tick event to detect when players move out of range.
+     */
+    public static void checkPlayerPosition(ServerPlayerEntity player) {
+        UUID playerId = player.getUuid();
+        AreaState state = playerStates.get(playerId);
+        
+        if (state == null) {
+            // No tracked location for this player
+            return;
+        }
+        
+        // Check if player is still in range of the tracked location
+        boolean currentlyInside = isPlayerInRange(player, state.lastLaserX, state.lastLaserZ);
+        
+        // If state changed, trigger callback
+        if (state.isInside != currentlyInside) {
+            AreaCheckResult result = handlePlayerAreaCheck(player, state.lastLaserX, state.lastLaserZ);
+            
+            if (areaChangeCallback != null && result.hasStateChanged()) {
+                areaChangeCallback.accept(new AreaChangeEvent(player, result, state.lastLaserX, state.lastLaserZ));
+            }
+        }
+    }
+    
+    /**
+     * Event data for area state changes
+     */
+    public static class AreaChangeEvent {
+        public final ServerPlayerEntity player;
+        public final AreaCheckResult result;
+        public final double laserX;
+        public final double laserZ;
+        
+        public AreaChangeEvent(ServerPlayerEntity player, AreaCheckResult result, double laserX, double laserZ) {
+            this.player = player;
+            this.result = result;
+            this.laserX = laserX;
+            this.laserZ = laserZ;
+        }
     }
 
     /**
