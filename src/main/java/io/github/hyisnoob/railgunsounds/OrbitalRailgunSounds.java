@@ -27,6 +27,9 @@ public class OrbitalRailgunSounds implements ModInitializer {
     public static final Identifier PLAY_SOUND_PACKET_ID = new Identifier(MOD_ID, "play_sound");
     public static final Identifier SHOOT_PACKET_ID = new Identifier("orbital_railgun", "shoot_packet");
     public static final Identifier STOP_AREA_SOUND_PACKET_ID = new Identifier(MOD_ID, "stop_area_sound");
+    
+    // Duration of the railgun shoot sound effect in milliseconds (from railgun-shoot.ogg)
+    public static final long RAILGUN_SOUND_DURATION_MS = 52992L; // ~53 seconds
 
     @Override
     public void onInitialize() {
@@ -175,21 +178,20 @@ public class OrbitalRailgunSounds implements ModInitializer {
             // Player just entered the sound range
             long currentTime = System.currentTimeMillis();
             long elapsedMs = currentTime - result.fireTimestamp;
-            long soundDuration = ServerConfig.INSTANCE.getSoundDurationMs();
             
             if (ServerConfig.INSTANCE.isDebugMode()) {
                 LOGGER.info("Player {} entered sound range at ({}, {}) - elapsed: {}ms, duration: {}ms", 
-                    player.getName().getString(), laserX, laserZ, elapsedMs, soundDuration);
+                    player.getName().getString(), laserX, laserZ, elapsedMs, RAILGUN_SOUND_DURATION_MS);
             }
             
             // Only play sound if it hasn't finished yet
-            if (elapsedMs < soundDuration) {
+            if (elapsedMs < RAILGUN_SOUND_DURATION_MS) {
                 // Play the railgun shoot sound to the player who just entered range
                 playRailgunSoundToPlayer(player, laserX, laserZ, elapsedMs);
             } else {
                 if (ServerConfig.INSTANCE.isDebugMode()) {
                     LOGGER.info("Sound already ended ({}ms > {}ms) - not playing for player {}", 
-                        elapsedMs, soundDuration, player.getName().getString());
+                        elapsedMs, RAILGUN_SOUND_DURATION_MS, player.getName().getString());
                 }
             }
             
