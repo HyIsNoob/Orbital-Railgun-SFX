@@ -20,6 +20,7 @@ public class OrbitalRailgunSounds implements ModInitializer {
     public static final Logger LOGGER = Logger.getLogger(MOD_ID);
     public static final Identifier PLAY_SOUND_PACKET_ID = new Identifier(MOD_ID, "play_sound");
     public static final Identifier AREA_CHECK_PACKET_ID = new Identifier(MOD_ID, "area_check");
+    public static final Identifier SHOOT_PACKET_ID = new Identifier("orbital_railgun", "shoot_packet");
     private static final ServerConfig CONFIG = new ServerConfig();
 
     @Override
@@ -68,12 +69,23 @@ public class OrbitalRailgunSounds implements ModInitializer {
         ServerPlayNetworking.registerGlobalReceiver(AREA_CHECK_PACKET_ID,
                 (server, player, handler, buf, responseSender) -> {
                     server.execute(() -> {
-                        double laserX = buf.readDouble(); // Beispiel: Koordinaten aus dem Paket lesen
+                        double laserX = buf.readDouble();
                         double laserZ = buf.readDouble();
                         PlayerAreaListener.handlePlayerAreaCheck(player, laserX, laserZ);
                     });
                 });
 
-        PlayerAreaListener.registerPacketListener();
+        ServerPlayNetworking.registerGlobalReceiver(SHOOT_PACKET_ID, (server, player, handler, buf, responseSender) -> {
+            var blockPos = buf.readBlockPos();
+
+            OrbitalRailgunSounds.LOGGER.info("Received packet from player: " + player.getName().getString() + ", BlockPos: " + blockPos);
+
+            server.execute(() -> {
+                double laserX = blockPos.getX() + 0.5;
+                double laserZ = blockPos.getZ() + 0.5;
+
+                PlayerAreaListener.handlePlayerAreaCheck(player, laserX, laserZ);
+            });
+        });
     }
 }
