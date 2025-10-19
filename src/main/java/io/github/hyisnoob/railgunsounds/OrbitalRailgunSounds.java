@@ -24,11 +24,10 @@ public class OrbitalRailgunSounds implements ModInitializer {
     public static final Identifier PLAY_SOUND_PACKET_ID = new Identifier(MOD_ID, "play_sound");
     public static final Identifier AREA_CHECK_PACKET_ID = new Identifier(MOD_ID, "area_check");
     public static final Identifier SHOOT_PACKET_ID = new Identifier("orbital_railgun", "shoot_packet");
-    private static final ServerConfig CONFIG = new ServerConfig();
 
     @Override
     public void onInitialize() {
-        CONFIG.loadConfig();
+        ServerConfig.INSTANCE.loadConfig();
         SoundsRegistry.initialize();
         CommandRegistry.registerCommands();
         LOGGER.info("Orbital Railgun Sounds Addon initialized. Sound events registered");
@@ -58,21 +57,41 @@ public class OrbitalRailgunSounds implements ModInitializer {
 
                         double range = ServerConfig.INSTANCE.getSoundRange();
                         double rangeSquared = range * range;
+                        double laserX = blockPos.getX() + 0.5;
+                        double laserZ = blockPos.getZ() + 0.5;
 
-                        player.getWorld().getPlayers().forEach(nearbyPlayer -> {
+                        if (ServerConfig.INSTANCE.isDebugMode()) {
+                            LOGGER.info("Playing sound {} at BlockPos: {} with range: {}", 
+                                soundId, blockPos, range);
+                        }
+
+                        // Check all players on the server to see if they're in range
+                        server.getPlayerManager().getPlayerList().forEach(nearbyPlayer -> {
                             double distanceSquared = nearbyPlayer.squaredDistanceTo(
                                     blockPos.getX() + 0.5,
                                     blockPos.getY() + 0.5,
                                     blockPos.getZ() + 0.5
                             );
+                            
                             if (distanceSquared <= rangeSquared) {
-                                nearbyPlayer.playSound(
-                                        sound,
-                                        SoundCategory.PLAYERS,
-                                        volumeShoot,
-                                        pitchShoot
-                                );
-                                SoundLogger.logSoundEvent(soundId.toString(), blockPos, range);
+                                // Check if player is in the area using PlayerAreaListener
+                                boolean isInRange = PlayerAreaListener.isPlayerInRange(nearbyPlayer, laserX, laserZ);
+                                
+                                if (isInRange) {
+                                    nearbyPlayer.playSound(
+                                            sound,
+                                            SoundCategory.PLAYERS,
+                                            volumeShoot,
+                                            pitchShoot
+                                    );
+                                    SoundLogger.logSoundEvent(soundId.toString(), blockPos, range);
+                                    
+                                    if (ServerConfig.INSTANCE.isDebugMode()) {
+                                        LOGGER.info("Playing sound to player {} (distance: {})", 
+                                            nearbyPlayer.getName().getString(), 
+                                            Math.sqrt(distanceSquared));
+                                    }
+                                }
                             }
                         });
                     });
