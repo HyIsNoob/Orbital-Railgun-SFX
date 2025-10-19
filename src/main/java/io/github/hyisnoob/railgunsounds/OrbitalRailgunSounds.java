@@ -25,7 +25,6 @@ public class OrbitalRailgunSounds implements ModInitializer {
     public static final String MOD_ID = "orbital_railgun_sounds";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final Identifier PLAY_SOUND_PACKET_ID = new Identifier(MOD_ID, "play_sound");
-    public static final Identifier AREA_CHECK_PACKET_ID = new Identifier(MOD_ID, "area_check");
     public static final Identifier SHOOT_PACKET_ID = new Identifier("orbital_railgun", "shoot_packet");
     public static final Identifier STOP_AREA_SOUND_PACKET_ID = new Identifier(MOD_ID, "stop_area_sound");
 
@@ -40,8 +39,7 @@ public class OrbitalRailgunSounds implements ModInitializer {
         LOGGER.info("Debug mode: {}", ServerConfig.INSTANCE.isDebugMode());
         LOGGER.info("Sound range: {}", ServerConfig.INSTANCE.getSoundRange());
         LOGGER.info("=================================================");
-        
-        // Register callback for area state changes detected by periodic checks
+
         PlayerAreaListener.setAreaChangeCallback(event -> {
             handleAreaStateChange(event.player, event.result, event.laserX, event.laserZ);
         });
@@ -78,7 +76,6 @@ public class OrbitalRailgunSounds implements ModInitializer {
                                 soundId, blockPos, range);
                         }
 
-                        // Check all players and track state changes
                         server.getPlayerManager().getPlayerList().forEach(nearbyPlayer -> {
                             double distanceSquared = nearbyPlayer.squaredDistanceTo(
                                     blockPos.getX() + 0.5,
@@ -87,12 +84,10 @@ public class OrbitalRailgunSounds implements ModInitializer {
                             );
                             
                             if (distanceSquared <= rangeSquared) {
-                                // Use PlayerAreaListener to track state changes
                                 PlayerAreaListener.AreaCheckResult result = 
                                     PlayerAreaListener.handlePlayerAreaCheck(nearbyPlayer, laserX, laserZ);
                                 
                                 if (result.isInside) {
-                                    // Only play sound if player is in range
                                     nearbyPlayer.playSound(
                                             sound,
                                             SoundCategory.PLAYERS,
@@ -107,25 +102,19 @@ public class OrbitalRailgunSounds implements ModInitializer {
                                             Math.sqrt(distanceSquared));
                                     }
                                 }
-                                
-                                // Handle state changes (enter/leave detection)
+
                                 handleAreaStateChange(nearbyPlayer, result, laserX, laserZ);
                             } else {
-                                // Player is outside range - check if they left the zone
                                 PlayerAreaListener.AreaCheckResult result = 
                                     PlayerAreaListener.handlePlayerAreaCheck(nearbyPlayer, laserX, laserZ);
                                 
                                 if (result.hasLeft()) {
-                                    // Player just left the range
                                     handleAreaStateChange(nearbyPlayer, result, laserX, laserZ);
                                 }
                             }
                         });
                     });
                 });
-
-        // AREA_CHECK_PACKET_ID is not needed - area checking happens server-side when railgun fires
-        // Removed broken packet handler that expected coordinates the client doesn't have
 
         ServerPlayNetworking.registerGlobalReceiver(SHOOT_PACKET_ID, (server, player, handler, buf, responseSender) -> {
             BlockPos blockPos = buf.readBlockPos();
@@ -157,13 +146,10 @@ public class OrbitalRailgunSounds implements ModInitializer {
                 }
             });
         });
-        
-        // Register server tick event to check player positions periodically
+
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            // Check every 20 ticks (1 second) to reduce overhead
             if (server.getTicks() % 20 == 0) {
                 server.getPlayerManager().getPlayerList().forEach(player -> {
-                    // Check all tracked locations for this player
                     PlayerAreaListener.checkPlayerPosition(player);
                 });
             }
@@ -178,27 +164,22 @@ public class OrbitalRailgunSounds implements ModInitializer {
                                              PlayerAreaListener.AreaCheckResult result, 
                                              double laserX, double laserZ) {
         if (result.hasEntered()) {
-            // Player just entered the sound range
             if (ServerConfig.INSTANCE.isDebugMode()) {
                 LOGGER.info("Player {} entered sound range at ({}, {})", 
                     player.getName().getString(), laserX, laserZ);
             }
-            
-            // Play the railgun shoot sound to the player who just entered range
+
             playRailgunSoundToPlayer(player, laserX, laserZ);
             
         } else if (result.hasLeft()) {
-            // Player just left the sound range - stop any playing area sounds
             if (ServerConfig.INSTANCE.isDebugMode()) {
                 LOGGER.info("Player {} left sound range at ({}, {}) - stopping sounds", 
                     player.getName().getString(), laserX, laserZ);
             }
-            
-            // Send packet to client to stop area-based sounds
+
             stopAreaSoundsForPlayer(player);
             
         } else if (result.isInside) {
-            // Player is still inside the range (already heard the sound)
             if (ServerConfig.INSTANCE.isDebugMode()) {
                 LOGGER.debug("Player {} remains in sound range at ({}, {})", 
                     player.getName().getString(), laserX, laserZ);
@@ -210,16 +191,14 @@ public class OrbitalRailgunSounds implements ModInitializer {
      * Plays the railgun shoot sound to a specific player at the laser impact location.
      */
     private static void playRailgunSoundToPlayer(ServerPlayerEntity player, double laserX, double laserZ) {
-        // Use the railgun shoot sound from the registry
         SoundEvent shootSound = SoundsRegistry.RAILGUN_SHOOT;
         
         if (shootSound != null) {
-            // Play the sound at the laser impact location
             player.playSound(
                 shootSound,
                 SoundCategory.PLAYERS,
-                1.0f,  // volume
-                1.0f   // pitch
+                1.0f,
+                1.0f
             );
             
             if (ServerConfig.INSTANCE.isDebugMode()) {
@@ -236,7 +215,6 @@ public class OrbitalRailgunSounds implements ModInitializer {
      */
     private static void stopAreaSoundsForPlayer(ServerPlayerEntity player) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        // Send the sound ID that should be stopped
         buf.writeIdentifier(SoundsRegistry.RAILGUN_SHOOT_ID);
         
         ServerPlayNetworking.send(player, STOP_AREA_SOUND_PACKET_ID, buf);

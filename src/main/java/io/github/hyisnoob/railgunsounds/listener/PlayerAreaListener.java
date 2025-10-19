@@ -45,8 +45,7 @@ public class PlayerAreaListener {
         
         double playerX = player.getX();
         double playerZ = player.getZ();
-        
-        // Calculate squared distance (more efficient than using sqrt)
+
         double dx = playerX - laserX;
         double dz = playerZ - laserZ;
         double distanceSquared = dx * dx + dz * dz;
@@ -70,22 +69,18 @@ public class PlayerAreaListener {
         
         AreaState previousState = playerStates.get(playerId);
         boolean wasInside = previousState != null && previousState.isInside;
-        
-        // Check if this is a new laser location or first check for this player
+
         boolean isNewLocation = previousState == null || 
                                 previousState.lastLaserX != laserX || 
                                 previousState.lastLaserZ != laserZ;
-        
-        // Update the state
+
         playerStates.put(playerId, new AreaState(currentlyInside, laserX, laserZ));
-        
-        // Determine what action should be taken
+
         AreaCheckResult result = new AreaCheckResult();
         result.isInside = currentlyInside;
         result.wasInside = wasInside;
         result.isNewLocation = isNewLocation;
-        
-        // Log state changes if debug mode is enabled
+
         if (ServerConfig.INSTANCE.isDebugMode()) {
             if (isNewLocation) {
                 LOGGER.info("New laser location: ({}, {}) for player {}", laserX, laserZ, player.getName().getString());
@@ -132,14 +127,11 @@ public class PlayerAreaListener {
         AreaState state = playerStates.get(playerId);
         
         if (state == null) {
-            // No tracked location for this player
             return;
         }
-        
-        // Check if player is still in range of the tracked location
+
         boolean currentlyInside = isPlayerInRange(player, state.lastLaserX, state.lastLaserZ);
-        
-        // If state changed, trigger callback
+
         if (state.isInside != currentlyInside) {
             AreaCheckResult result = handlePlayerAreaCheck(player, state.lastLaserX, state.lastLaserZ);
             
