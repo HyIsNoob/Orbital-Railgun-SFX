@@ -19,6 +19,7 @@ public class OrbitalRailgunSounds implements ModInitializer {
     public static final String MOD_ID = "orbital_railgun_sounds";
     public static final Logger LOGGER = Logger.getLogger(MOD_ID);
     public static final Identifier PLAY_SOUND_PACKET_ID = new Identifier(MOD_ID, "play_sound");
+    public static final Identifier AREA_CHECK_PACKET_ID = new Identifier(MOD_ID, "area_check");
     private static final ServerConfig CONFIG = new ServerConfig();
 
     @Override
@@ -26,7 +27,6 @@ public class OrbitalRailgunSounds implements ModInitializer {
         CONFIG.loadConfig();
         SoundsRegistry.initialize();
         CommandRegistry.registerCommands();
-        PlayerAreaListener.register();
         LOGGER.info("Orbital Railgun Sounds Addon initialized. Sound events registered");
 
         ServerPlayNetworking.registerGlobalReceiver(PLAY_SOUND_PACKET_ID,
@@ -64,5 +64,16 @@ public class OrbitalRailgunSounds implements ModInitializer {
                         });
                     });
                 });
+
+        ServerPlayNetworking.registerGlobalReceiver(AREA_CHECK_PACKET_ID,
+                (server, player, handler, buf, responseSender) -> {
+                    server.execute(() -> {
+                        double laserX = buf.readDouble(); // Beispiel: Koordinaten aus dem Paket lesen
+                        double laserZ = buf.readDouble();
+                        PlayerAreaListener.handlePlayerAreaCheck(player, laserX, laserZ);
+                    });
+                });
+
+        PlayerAreaListener.registerPacketListener();
     }
 }

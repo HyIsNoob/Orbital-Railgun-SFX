@@ -43,6 +43,9 @@ public class OrbitalRailgunSoundsSounds {
         handleRailgunUsage(client, player, volumeScope);
         handleRailgunCooldown(player, volumeShoot);
         handleHotbarSwitch(player, volumeEquip);
+
+        PacketByteBuf areaBuf = new PacketByteBuf(Unpooled.buffer());
+        ClientPlayNetworking.send(SoundsRegistry.AREA_CHECK_PACKET_ID, areaBuf);
     }
 
     private void handleRailgunUsage(MinecraftClient client, ClientPlayerEntity player, float volumeScope) {
