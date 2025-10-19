@@ -30,7 +30,12 @@ public class OrbitalRailgunSounds implements ModInitializer {
         ServerConfig.INSTANCE.loadConfig();
         SoundsRegistry.initialize();
         CommandRegistry.registerCommands();
-        LOGGER.info("Orbital Railgun Sounds Addon initialized. Sound events registered");
+        
+        LOGGER.info("=================================================");
+        LOGGER.info("Orbital Railgun Sounds Addon initialized");
+        LOGGER.info("Debug mode: {}", ServerConfig.INSTANCE.isDebugMode());
+        LOGGER.info("Sound range: {}", ServerConfig.INSTANCE.getSoundRange());
+        LOGGER.info("=================================================");
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             PlayerAreaListener.clearPlayerState(handler.getPlayer().getUuid());
@@ -94,31 +99,26 @@ public class OrbitalRailgunSounds implements ModInitializer {
                     });
                 });
 
-        ServerPlayNetworking.registerGlobalReceiver(AREA_CHECK_PACKET_ID,
-                (server, player, handler, buf, responseSender) -> {
-                    double laserX = buf.readDouble();
-                    double laserZ = buf.readDouble();
-                    
-                    server.execute(() -> {
-                        PlayerAreaListener.AreaCheckResult result = 
-                            PlayerAreaListener.handlePlayerAreaCheck(player, laserX, laserZ);
-                        
-                        // Handle area state changes
-                        handleAreaStateChange(player, result, laserX, laserZ);
-                    });
-                });
+        // AREA_CHECK_PACKET_ID is not needed - area checking happens server-side when railgun fires
+        // Removed broken packet handler that expected coordinates the client doesn't have
 
         ServerPlayNetworking.registerGlobalReceiver(SHOOT_PACKET_ID, (server, player, handler, buf, responseSender) -> {
             BlockPos blockPos = buf.readBlockPos();
 
             if (ServerConfig.INSTANCE.isDebugMode()) {
-                LOGGER.info("Received shoot packet from player: {} at BlockPos: {}", 
-                    player.getName().getString(), blockPos);
+                LOGGER.info("========================================");
+                LOGGER.info("SHOOT_PACKET received from player: {}", player.getName().getString());
+                LOGGER.info("Impact location: {}", blockPos);
             }
 
             server.execute(() -> {
                 double laserX = blockPos.getX() + 0.5;
                 double laserZ = blockPos.getZ() + 0.5;
+                
+                int totalPlayers = server.getPlayerManager().getPlayerList().size();
+                if (ServerConfig.INSTANCE.isDebugMode()) {
+                    LOGGER.info("Checking {} players on server for range", totalPlayers);
+                }
 
                 server.getPlayerManager().getPlayerList().forEach(serverPlayer -> {
                     PlayerAreaListener.AreaCheckResult result = 
@@ -126,37 +126,72 @@ public class OrbitalRailgunSounds implements ModInitializer {
 
                     handleAreaStateChange(serverPlayer, result, laserX, laserZ);
                 });
+                
+                if (ServerConfig.INSTANCE.isDebugMode()) {
+                    LOGGER.info("========================================");
+                }
             });
         });
     }
 
     /**
      * Handles area state changes for a player (entering/leaving the sound range).
-     * This is where sound starting/stopping logic should be implemented.
+     * Plays railgun sounds to players who are in range when the railgun fires.
      */
     private static void handleAreaStateChange(ServerPlayerEntity player, 
                                              PlayerAreaListener.AreaCheckResult result, 
                                              double laserX, double laserZ) {
         if (result.hasEntered()) {
+            // Player just entered the sound range
             if (ServerConfig.INSTANCE.isDebugMode()) {
-                LOGGER.info("Player {} entered sound range - sounds should start", 
-                    player.getName().getString());
+                LOGGER.info("Player {} entered sound range at ({}, {})", 
+                    player.getName().getString(), laserX, laserZ);
             }
-            // TODO: Implement sound starting logic here
-            // This would typically involve sending a packet to the client to start playing ambient sounds
+            
+            // Play the railgun shoot sound to the player who just entered range
+            playRailgunSoundToPlayer(player, laserX, laserZ);
             
         } else if (result.hasLeft()) {
+            // Player just left the sound range
             if (ServerConfig.INSTANCE.isDebugMode()) {
-                LOGGER.info("Player {} left sound range - sounds should stop", 
-                    player.getName().getString());
+                LOGGER.info("Player {} left sound range at ({}, {})", 
+                    player.getName().getString(), laserX, laserZ);
             }
-            // TODO: Implement sound stopping logic here
-            // This would typically involve sending a packet to the client to stop playing ambient sounds
+            
+            // When player leaves range, sounds naturally stop (no action needed for one-shot sounds)
+            // For continuous sounds, you would send a stop packet here
             
         } else if (result.isInside) {
+            // Player is still inside the range (already heard the sound)
             if (ServerConfig.INSTANCE.isDebugMode()) {
-                LOGGER.debug("Player {} remains in sound range", player.getName().getString());
+                LOGGER.debug("Player {} remains in sound range at ({}, {})", 
+                    player.getName().getString(), laserX, laserZ);
             }
+        }
+    }
+    
+    /**
+     * Plays the railgun shoot sound to a specific player at the laser impact location.
+     */
+    private static void playRailgunSoundToPlayer(ServerPlayerEntity player, double laserX, double laserZ) {
+        // Use the railgun shoot sound from the registry
+        SoundEvent shootSound = SoundsRegistry.RAILGUN_SHOOT;
+        
+        if (shootSound != null) {
+            // Play the sound at the laser impact location
+            player.playSound(
+                shootSound,
+                SoundCategory.PLAYERS,
+                1.0f,  // volume
+                1.0f   // pitch
+            );
+            
+            if (ServerConfig.INSTANCE.isDebugMode()) {
+                LOGGER.info("Playing railgun shoot sound to player {} at ({}, {})", 
+                    player.getName().getString(), laserX, laserZ);
+            }
+        } else {
+            LOGGER.warn("Railgun shoot sound not found in registry");
         }
     }
 }
