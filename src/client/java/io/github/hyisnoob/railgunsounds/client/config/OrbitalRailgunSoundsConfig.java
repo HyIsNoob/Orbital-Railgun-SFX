@@ -13,7 +13,7 @@ public class OrbitalRailgunSoundsConfig {
     public double scopeVolume = 1.0;
     
     @RangeConstraint(min = 0.0, max = 1.0)
-    public double shootVolume = 1.0;
+    public double shootVolume = 0.5;
     
     @RangeConstraint(min = 0.0, max = 1.0)
     public double equipVolume = 1.0;

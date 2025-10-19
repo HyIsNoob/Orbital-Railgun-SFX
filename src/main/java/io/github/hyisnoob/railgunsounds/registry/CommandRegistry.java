@@ -10,8 +10,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
 public class CommandRegistry {
-    private static final ServerConfig CONFIG = new ServerConfig();
-
     private static int showHelp(CommandContext<ServerCommandSource> context) {
         context.getSource().sendFeedback(() -> Text.literal("Available commands:\n" +
                 "/orsounds debug <true|false> - Toggle debug mode\n" +
@@ -20,7 +18,7 @@ public class CommandRegistry {
     }
 
     public static void registerCommands() {
-        CONFIG.loadConfig();
+        ServerConfig.INSTANCE.loadConfig();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(CommandManager.literal("orsounds")
                     .executes(CommandRegistry::showHelp)
@@ -36,19 +34,19 @@ public class CommandRegistry {
     }
 
     private static int toggleDebugMode(CommandContext<ServerCommandSource> context, boolean enabled) {
-        CONFIG.setDebugMode(enabled);
+        ServerConfig.INSTANCE.setDebugMode(enabled);
         context.getSource().sendFeedback(() -> Text.literal("Debug mode set to: " + enabled), false);
         return 1;
     }
 
     private static int setRadiusValue(CommandContext<ServerCommandSource> context, double radius) {
-        CONFIG.setSoundRange(radius);
+        ServerConfig.INSTANCE.setSoundRange(radius);
         context.getSource().sendFeedback(() -> Text.literal("Radius set to: " + radius), false);
         return 1;
     }
 
 
     public static boolean isDebugMode() {
-        return CONFIG.isDebugMode();
+        return ServerConfig.INSTANCE.isDebugMode();
     }
 }
