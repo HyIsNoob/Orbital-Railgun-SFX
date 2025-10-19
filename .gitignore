@@ -99,7 +99,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-.github/
 .gradle/
 .mvn/
 .vscode/
