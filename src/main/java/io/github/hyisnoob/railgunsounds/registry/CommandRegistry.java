@@ -1,6 +1,7 @@
 package io.github.hyisnoob.railgunsounds.registry;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import io.github.hyisnoob.railgunsounds.config.ServerConfig;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -26,6 +27,9 @@ public class CommandRegistry {
                     .then(CommandManager.literal("debug")
                             .then(CommandManager.argument("enabled", BoolArgumentType.bool())
                                     .executes(context -> toggleDebugMode(context, BoolArgumentType.getBool(context, "enabled")))))
+                    .then(CommandManager.literal("radius")
+                            .then(CommandManager.argument("value", DoubleArgumentType.doubleArg(0.0))
+                                    .executes(context -> setRadiusValue(context, DoubleArgumentType.getDouble(context, "value")))))
                     .then(CommandManager.literal("help")
                             .executes(CommandRegistry::showHelp)));
         });
@@ -36,6 +40,13 @@ public class CommandRegistry {
         context.getSource().sendFeedback(() -> Text.literal("Debug mode set to: " + enabled), false);
         return 1;
     }
+
+    private static int setRadiusValue(CommandContext<ServerCommandSource> context, double radius) {
+        CONFIG.setSoundRange(radius);
+        context.getSource().sendFeedback(() -> Text.literal("Radius set to: " + radius), false);
+        return 1;
+    }
+
 
     public static boolean isDebugMode() {
         return CONFIG.isDebugMode();
