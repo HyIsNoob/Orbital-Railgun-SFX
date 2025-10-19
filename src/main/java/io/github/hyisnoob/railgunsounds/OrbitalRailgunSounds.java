@@ -8,9 +8,11 @@ import io.github.hyisnoob.railgunsounds.registry.CommandRegistry;
 import io.github.hyisnoob.railgunsounds.logger.SoundLogger;
 import io.github.hyisnoob.railgunsounds.config.ServerConfig;
 import io.github.hyisnoob.railgunsounds.listener.PlayerAreaListener;
+import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -24,6 +26,7 @@ public class OrbitalRailgunSounds implements ModInitializer {
     public static final Identifier PLAY_SOUND_PACKET_ID = new Identifier(MOD_ID, "play_sound");
     public static final Identifier AREA_CHECK_PACKET_ID = new Identifier(MOD_ID, "area_check");
     public static final Identifier SHOOT_PACKET_ID = new Identifier("orbital_railgun", "shoot_packet");
+    public static final Identifier STOP_AREA_SOUND_PACKET_ID = new Identifier(MOD_ID, "stop_area_sound");
 
     @Override
     public void onInitialize() {
@@ -152,14 +155,14 @@ public class OrbitalRailgunSounds implements ModInitializer {
             playRailgunSoundToPlayer(player, laserX, laserZ);
             
         } else if (result.hasLeft()) {
-            // Player just left the sound range
+            // Player just left the sound range - stop any playing area sounds
             if (ServerConfig.INSTANCE.isDebugMode()) {
-                LOGGER.info("Player {} left sound range at ({}, {})", 
+                LOGGER.info("Player {} left sound range at ({}, {}) - stopping sounds", 
                     player.getName().getString(), laserX, laserZ);
             }
             
-            // When player leaves range, sounds naturally stop (no action needed for one-shot sounds)
-            // For continuous sounds, you would send a stop packet here
+            // Send packet to client to stop area-based sounds
+            stopAreaSoundsForPlayer(player);
             
         } else if (result.isInside) {
             // Player is still inside the range (already heard the sound)
@@ -192,6 +195,21 @@ public class OrbitalRailgunSounds implements ModInitializer {
             }
         } else {
             LOGGER.warn("Railgun shoot sound not found in registry");
+        }
+    }
+    
+    /**
+     * Sends a packet to the client to stop area-based sounds.
+     */
+    private static void stopAreaSoundsForPlayer(ServerPlayerEntity player) {
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        // Send the sound ID that should be stopped
+        buf.writeIdentifier(SoundsRegistry.RAILGUN_SHOOT_ID);
+        
+        ServerPlayNetworking.send(player, STOP_AREA_SOUND_PACKET_ID, buf);
+        
+        if (ServerConfig.INSTANCE.isDebugMode()) {
+            LOGGER.info("Sent stop sound packet to player {}", player.getName().getString());
         }
     }
 }
