@@ -72,6 +72,7 @@ public class OrbitalRailgunSounds implements ModInitializer {
                                 soundId, blockPos, range);
                         }
 
+                        // Check all players and track state changes
                         server.getPlayerManager().getPlayerList().forEach(nearbyPlayer -> {
                             double distanceSquared = nearbyPlayer.squaredDistanceTo(
                                     blockPos.getX() + 0.5,
@@ -80,9 +81,12 @@ public class OrbitalRailgunSounds implements ModInitializer {
                             );
                             
                             if (distanceSquared <= rangeSquared) {
-                                boolean isInRange = PlayerAreaListener.isPlayerInRange(nearbyPlayer, laserX, laserZ);
+                                // Use PlayerAreaListener to track state changes
+                                PlayerAreaListener.AreaCheckResult result = 
+                                    PlayerAreaListener.handlePlayerAreaCheck(nearbyPlayer, laserX, laserZ);
                                 
-                                if (isInRange) {
+                                if (result.isInside) {
+                                    // Only play sound if player is in range
                                     nearbyPlayer.playSound(
                                             sound,
                                             SoundCategory.PLAYERS,
@@ -96,6 +100,18 @@ public class OrbitalRailgunSounds implements ModInitializer {
                                             nearbyPlayer.getName().getString(), 
                                             Math.sqrt(distanceSquared));
                                     }
+                                }
+                                
+                                // Handle state changes (enter/leave detection)
+                                handleAreaStateChange(nearbyPlayer, result, laserX, laserZ);
+                            } else {
+                                // Player is outside range - check if they left the zone
+                                PlayerAreaListener.AreaCheckResult result = 
+                                    PlayerAreaListener.handlePlayerAreaCheck(nearbyPlayer, laserX, laserZ);
+                                
+                                if (result.hasLeft()) {
+                                    // Player just left the range
+                                    handleAreaStateChange(nearbyPlayer, result, laserX, laserZ);
                                 }
                             }
                         });
