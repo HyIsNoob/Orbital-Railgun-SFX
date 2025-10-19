@@ -14,12 +14,16 @@ public class ServerConfig {
     public static final ServerConfig INSTANCE = new ServerConfig();
     private boolean debugMode = false;
     private double soundRange = 500.0;
+    private long soundDurationMs = 10000; // Default: 10 seconds (10000 milliseconds)
 
     public boolean isDebugMode() {
         return debugMode;
     }
     public double getSoundRange() {
         return soundRange;
+    }
+    public long getSoundDurationMs() {
+        return soundDurationMs;
     }
 
     public void setDebugMode(boolean debugMode) {
@@ -31,6 +35,11 @@ public class ServerConfig {
         this.soundRange = soundRange;
         saveConfig();
     }
+    
+    public void setSoundDurationMs(long soundDurationMs) {
+        this.soundDurationMs = soundDurationMs;
+        saveConfig();
+    }
 
     public void loadConfig() {
         if (CONFIG_FILE.exists()) {
@@ -38,6 +47,9 @@ public class ServerConfig {
                 ServerConfig config = GSON.fromJson(reader, ServerConfig.class);
                 this.debugMode = config.debugMode;
                 this.soundRange = config.soundRange;
+                if (config.soundDurationMs > 0) {
+                    this.soundDurationMs = config.soundDurationMs;
+                }
             } catch (IOException e) {
                 System.err.println("Failed to load config: " + e.getMessage());
             }

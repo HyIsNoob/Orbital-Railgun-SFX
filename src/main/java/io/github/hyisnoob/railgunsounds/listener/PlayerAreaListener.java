@@ -23,11 +23,13 @@ public class PlayerAreaListener {
         boolean isInside;
         double lastLaserX;
         double lastLaserZ;
+        long fireTimestamp; // When the railgun was fired (in milliseconds)
 
-        AreaState(boolean isInside, double laserX, double laserZ) {
+        AreaState(boolean isInside, double laserX, double laserZ, long fireTimestamp) {
             this.isInside = isInside;
             this.lastLaserX = laserX;
             this.lastLaserZ = laserZ;
+            this.fireTimestamp = fireTimestamp;
         }
     }
 
@@ -64,6 +66,20 @@ public class PlayerAreaListener {
      * @return An AreaCheckResult containing state information
      */
     public static AreaCheckResult handlePlayerAreaCheck(ServerPlayerEntity player, double laserX, double laserZ) {
+        return handlePlayerAreaCheck(player, laserX, laserZ, System.currentTimeMillis());
+    }
+    
+    /**
+     * Handles player area check and tracks state changes (entering/leaving area) with timestamp.
+     * Returns information about whether the player's state changed.
+     * 
+     * @param player The player to check
+     * @param laserX The X coordinate of the laser impact
+     * @param laserZ The Z coordinate of the laser impact
+     * @param fireTimestamp The timestamp when the railgun was fired (in milliseconds)
+     * @return An AreaCheckResult containing state information
+     */
+    public static AreaCheckResult handlePlayerAreaCheck(ServerPlayerEntity player, double laserX, double laserZ, long fireTimestamp) {
         UUID playerId = player.getUuid();
         boolean currentlyInside = isPlayerInRange(player, laserX, laserZ);
         
@@ -74,20 +90,25 @@ public class PlayerAreaListener {
                                 previousState.lastLaserX != laserX || 
                                 previousState.lastLaserZ != laserZ;
 
-        playerStates.put(playerId, new AreaState(currentlyInside, laserX, laserZ));
+        // Use the existing timestamp if this is the same location, otherwise use the new one
+        long timestamp = (isNewLocation || previousState == null) ? fireTimestamp : previousState.fireTimestamp;
+
+        playerStates.put(playerId, new AreaState(currentlyInside, laserX, laserZ, timestamp));
 
         AreaCheckResult result = new AreaCheckResult();
         result.isInside = currentlyInside;
         result.wasInside = wasInside;
         result.isNewLocation = isNewLocation;
+        result.fireTimestamp = timestamp;
 
         if (ServerConfig.INSTANCE.isDebugMode()) {
             if (isNewLocation) {
-                LOGGER.info("New laser location: ({}, {}) for player {}", laserX, laserZ, player.getName().getString());
+                LOGGER.info("New laser location: ({}, {}) for player {} at time {}", laserX, laserZ, player.getName().getString(), timestamp);
             }
             if (!wasInside && currentlyInside) {
-                LOGGER.info("Player {} entered sound range at ({}, {})", 
-                    player.getName().getString(), laserX, laserZ);
+                long elapsedMs = System.currentTimeMillis() - timestamp;
+                LOGGER.info("Player {} entered sound range at ({}, {}) - elapsed: {}ms", 
+                    player.getName().getString(), laserX, laserZ, elapsedMs);
             } else if (wasInside && !currentlyInside) {
                 LOGGER.info("Player {} left sound range at ({}, {})", 
                     player.getName().getString(), laserX, laserZ);
@@ -165,6 +186,7 @@ public class PlayerAreaListener {
         public boolean isInside;
         public boolean wasInside;
         public boolean isNewLocation;
+        public long fireTimestamp; // When the railgun was fired
         
         /**
          * @return true if the player just entered the area
