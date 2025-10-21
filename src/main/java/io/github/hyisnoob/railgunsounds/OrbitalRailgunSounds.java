@@ -21,6 +21,27 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * Main mod class for Orbital Railgun Sounds addon.
+ * 
+ * Features:
+ * - Custom sound effects for the Orbital Railgun mod (equip, scope, fire)
+ * - Client-side sound position synchronization for multiplayer
+ * 
+ * Sound Synchronization System:
+ * When a railgun fires, the server tracks the timestamp. If a player enters the sound range
+ * after the sound has started playing, the client will receive a packet with the elapsed time
+ * and attempt to seek the audio to the correct position using OpenAL, ensuring all players
+ * hear the sound synchronized to the actual time it has been playing.
+ * 
+ * Flow:
+ * 1. Server: Railgun fires, timestamp recorded (PlayerAreaListener.AreaState)
+ * 2. Server: Player enters range, elapsed time calculated
+ * 3. Server: PLAY_SOUND_WITH_OFFSET_PACKET_ID sent to client with offset
+ * 4. Client: Packet received, SynchronizedSoundManager plays sound
+ * 5. Client: OpenAL seeks audio to correct position (via reflection)
+ * 6. Client: Sound plays synchronized with other players
+ */
 public class OrbitalRailgunSounds implements ModInitializer {
     public static final String MOD_ID = "orbital_railgun_sounds";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);

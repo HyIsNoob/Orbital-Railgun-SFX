@@ -22,6 +22,23 @@ import java.util.concurrent.ConcurrentHashMap;
  * 
  * This implementation uses reflection and OpenAL to achieve audio seeking,
  * allowing sounds to start from a specific time offset rather than from the beginning.
+ * 
+ * How it works:
+ * 1. Receives a sound event with an offset in milliseconds
+ * 2. Creates a custom PositionedRailgunSoundInstance and plays it
+ * 3. Uses reflection to access Minecraft's internal sound system (SoundManager -> SoundSystem -> Sources)
+ * 4. Retrieves the OpenAL source ID for the playing sound
+ * 5. Uses AL_SEC_OFFSET to seek the audio to the correct position
+ * 6. Retries with progressive delays if the sound source isn't ready yet
+ * 
+ * Fallback behavior:
+ * If reflection fails or seeking is not available, the sound plays from the beginning
+ * but the offset information is still tracked for future use or mod compatibility.
+ * 
+ * Technical notes:
+ * - Uses OpenAL's AL_SEC_OFFSET for seeking (requires LWJGL)
+ * - Reflection field names are version-specific (tested with Minecraft 1.20.1)
+ * - Retry logic handles timing issues with sound system initialization
  */
 public class SynchronizedSoundManager {
     private static final Logger LOGGER = LoggerFactory.getLogger("orbital_railgun_sounds");
