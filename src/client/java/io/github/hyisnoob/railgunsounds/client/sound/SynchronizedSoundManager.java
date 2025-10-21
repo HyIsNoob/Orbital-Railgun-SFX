@@ -69,12 +69,24 @@ public class SynchronizedSoundManager {
         if (offsetMs > 0) {
             // Schedule the seek operation slightly after the sound starts playing
             // This gives the sound system time to initialize the audio source
+            // We try multiple times with increasing delays to ensure the source is ready
             new Thread(() -> {
-                try {
-                    Thread.sleep(50); // Wait 50ms for the sound to initialize
-                    seekSound(soundInstance, offsetMs);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                boolean seekSuccessful = false;
+                int maxAttempts = 5;
+                for (int attempt = 1; attempt <= maxAttempts && !seekSuccessful; attempt++) {
+                    try {
+                        Thread.sleep(attempt * 20); // Progressive delay: 20ms, 40ms, 60ms, 80ms, 100ms
+                        seekSuccessful = seekSound(soundInstance, offsetMs);
+                        if (seekSuccessful) {
+                            break;
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+                if (!seekSuccessful) {
+                    LOGGER.info("Could not seek audio after {} attempts, playing from start", maxAttempts);
                 }
             }).start();
             
@@ -94,8 +106,9 @@ public class SynchronizedSoundManager {
      * 
      * @param soundInstance The sound instance to seek
      * @param offsetMs The offset in milliseconds
+     * @return true if seeking was successful, false otherwise
      */
-    private static void seekSound(PositionedRailgunSoundInstance soundInstance, long offsetMs) {
+    private static boolean seekSound(PositionedRailgunSoundInstance soundInstance, long offsetMs) {
         try {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client == null) {
@@ -104,68 +117,122 @@ public class SynchronizedSoundManager {
             
             SoundManager soundManager = client.getSoundManager();
             
-            // Try to access the sound system's internal source mapping
-            // Note: This is implementation-specific and may not work across all Minecraft versions
-            // The field names may vary between versions
+            // Access the sound system's internal structures using reflection
+            // This is version-specific but works with Minecraft 1.20.1
             
-            // Attempt to get the source field from SoundManager
-            Field sourcesField = null;
-            for (Field field : soundManager.getClass().getDeclaredFields()) {
-                // Look for a Map field that might contain sound sources
-                if (Map.class.isAssignableFrom(field.getType())) {
-                    field.setAccessible(true);
-                    Object fieldValue = field.get(soundManager);
-                    if (fieldValue instanceof Map) {
-                        Map<?, ?> map = (Map<?, ?>) fieldValue;
-                        // Check if this map might contain our sound instance
-                        if (map.containsKey(soundInstance)) {
-                            sourcesField = field;
-                            break;
-                        }
+            // Try to find the soundSystem/sources field in SoundManager
+            Field soundSystemField = null;
+            try {
+                // Common field names in different versions
+                String[] possibleFieldNames = {"soundSystem", "field_18952", "f_120397_"};
+                for (String fieldName : possibleFieldNames) {
+                    try {
+                        soundSystemField = soundManager.getClass().getDeclaredField(fieldName);
+                        soundSystemField.setAccessible(true);
+                        break;
+                    } catch (NoSuchFieldException ignored) {
+                        // Try next field name
                     }
                 }
+            } catch (Exception e) {
+                LOGGER.debug("Could not find soundSystem field: {}", e.getMessage());
             }
             
-            if (sourcesField != null) {
-                Map<?, ?> sources = (Map<?, ?>) sourcesField.get(soundManager);
-                Object source = sources.get(soundInstance);
+            if (soundSystemField != null) {
+                Object soundSystem = soundSystemField.get(soundManager);
                 
-                if (source != null) {
-                    // Try to get the OpenAL source ID
-                    Integer sourceId = null;
-                    for (Method method : source.getClass().getMethods()) {
-                        if (method.getName().contains("getSource") || method.getName().contains("getId")) {
-                            method.setAccessible(true);
-                            Object result = method.invoke(source);
-                            if (result instanceof Integer) {
-                                sourceId = (Integer) result;
+                if (soundSystem != null) {
+                    // Try to find the sources map in the sound system
+                    Field sourcesField = null;
+                    try {
+                        String[] possibleSourcesFieldNames = {"sources", "field_19241", "f_120407_"};
+                        for (String fieldName : possibleSourcesFieldNames) {
+                            try {
+                                sourcesField = soundSystem.getClass().getDeclaredField(fieldName);
+                                sourcesField.setAccessible(true);
                                 break;
+                            } catch (NoSuchFieldException ignored) {
+                                // Try next field name
                             }
                         }
+                    } catch (Exception e) {
+                        LOGGER.debug("Could not find sources field: {}", e.getMessage());
                     }
                     
-                    if (sourceId != null && sourceId > 0) {
-                        // Convert milliseconds to seconds for OpenAL
-                        float offsetSeconds = offsetMs / 1000.0f;
+                    if (sourcesField != null) {
+                        Map<?, ?> sources = (Map<?, ?>) sourcesField.get(soundSystem);
                         
-                        // Use OpenAL to set the playback position
-                        AL10.alSourcef(sourceId, AL10.AL_SEC_OFFSET, offsetSeconds);
-                        
-                        LOGGER.info("Successfully seeked audio to {}s offset", offsetSeconds);
-                    } else {
-                        LOGGER.debug("Could not find OpenAL source ID for sound seeking");
+                        if (sources != null && sources.containsKey(soundInstance)) {
+                            Object channelHandle = sources.get(soundInstance);
+                            
+                            // Try to get the OpenAL source from the channel
+                            try {
+                                Field sourceField = null;
+                                String[] possibleSourceFieldNames = {"source", "field_19243", "f_120409_"};
+                                for (String fieldName : possibleSourceFieldNames) {
+                                    try {
+                                        sourceField = channelHandle.getClass().getDeclaredField(fieldName);
+                                        sourceField.setAccessible(true);
+                                        break;
+                                    } catch (NoSuchFieldException ignored) {
+                                        // Try next field name
+                                    }
+                                }
+                                
+                                if (sourceField != null) {
+                                    Object sourceObj = sourceField.get(channelHandle);
+                                    
+                                    // Get the integer source ID from the source object
+                                    Method getSourceMethod = null;
+                                    try {
+                                        getSourceMethod = sourceObj.getClass().getMethod("getInt");
+                                    } catch (NoSuchMethodException e) {
+                                        // Try alternative method names
+                                        for (Method method : sourceObj.getClass().getMethods()) {
+                                            if (method.getReturnType() == int.class && method.getParameterCount() == 0) {
+                                                getSourceMethod = method;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    
+                                    if (getSourceMethod != null) {
+                                        int sourceId = (int) getSourceMethod.invoke(sourceObj);
+                                        
+                                        if (sourceId > 0) {
+                                            // Convert milliseconds to seconds for OpenAL
+                                            float offsetSeconds = offsetMs / 1000.0f;
+                                            
+                                            // Use OpenAL to set the playback position
+                                            AL10.alSourcef(sourceId, AL10.AL_SEC_OFFSET, offsetSeconds);
+                                            
+                                            // Check for OpenAL errors
+                                            int error = AL10.alGetError();
+                                            if (error == AL10.AL_NO_ERROR) {
+                                                LOGGER.info("Successfully seeked audio to {}s offset (source ID: {})", 
+                                                    offsetSeconds, sourceId);
+                                                return true;
+                                            } else {
+                                                LOGGER.warn("OpenAL error when seeking: {}", error);
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                }
+                            } catch (Exception e) {
+                                LOGGER.debug("Could not access channel source: {}", e.getMessage());
+                            }
+                        } else {
+                            LOGGER.debug("Sound instance not yet in sources map");
+                        }
                     }
-                } else {
-                    LOGGER.debug("Sound source not found in sound manager");
                 }
-            } else {
-                LOGGER.debug("Could not access sound manager internals for seeking");
             }
         } catch (Exception e) {
             // If reflection fails, we gracefully degrade to playing from the beginning
             LOGGER.debug("Audio seeking not available (reflection failed): {}", e.getMessage());
-            LOGGER.info("Sound will play from beginning instead of offset position");
         }
+        return false;
     }
     
     /**
