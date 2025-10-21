@@ -27,6 +27,7 @@ public class OrbitalRailgunSounds implements ModInitializer {
     public static final Identifier PLAY_SOUND_PACKET_ID = new Identifier(MOD_ID, "play_sound");
     public static final Identifier SHOOT_PACKET_ID = new Identifier("orbital_railgun", "shoot_packet");
     public static final Identifier STOP_AREA_SOUND_PACKET_ID = new Identifier(MOD_ID, "stop_area_sound");
+    public static final Identifier PLAY_SOUND_WITH_OFFSET_PACKET_ID = new Identifier(MOD_ID, "play_sound_offset");
     
     // Duration of the railgun shoot sound effect in milliseconds (from railgun-shoot.ogg)
     public static final long RAILGUN_SOUND_DURATION_MS = 52992L; // ~53 seconds
@@ -223,16 +224,19 @@ public class OrbitalRailgunSounds implements ModInitializer {
         SoundEvent shootSound = SoundsRegistry.RAILGUN_SHOOT;
         
         if (shootSound != null) {
-            // Play the sound at the laser impact location
-            player.playSound(
-                shootSound,
-                SoundCategory.PLAYERS,
-                1.0f,  // volume
-                1.0f   // pitch
-            );
+            // Send packet to client with offset information for synchronized playback
+            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            buf.writeIdentifier(SoundsRegistry.RAILGUN_SHOOT_ID);
+            buf.writeDouble(laserX);
+            buf.writeDouble(laserZ);
+            buf.writeLong(elapsedMs);
+            buf.writeFloat(1.0f); // volume
+            buf.writeFloat(1.0f); // pitch
+            
+            ServerPlayNetworking.send(player, PLAY_SOUND_WITH_OFFSET_PACKET_ID, buf);
             
             if (ServerConfig.INSTANCE.isDebugMode()) {
-                LOGGER.info("Playing railgun shoot sound to player {} at ({}, {}) with {}ms offset", 
+                LOGGER.info("Sending synchronized sound packet to player {} at ({}, {}) with {}ms offset", 
                     player.getName().getString(), laserX, laserZ, elapsedMs);
             }
         } else {
