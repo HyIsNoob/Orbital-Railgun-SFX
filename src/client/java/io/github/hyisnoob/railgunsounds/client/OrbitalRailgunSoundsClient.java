@@ -44,9 +44,14 @@ public class OrbitalRailgunSoundsClient implements ClientModInitializer {
                 float volume = buf.readFloat();
                 float pitch = buf.readFloat();
                 
+                // Debug logging - use System.out to ensure it appears
+                System.out.println("[CLIENT] Received PLAY_SOUND_WITH_OFFSET packet: sound=" + soundId + ", offset=" + offsetMs + "ms, pos=(" + x + ", " + z + ")");
+                
                 client.execute(() -> {
+                    System.out.println("[CLIENT] Executing sound playback on client thread");
                     SoundEvent sound = Registries.SOUND_EVENT.get(soundId);
                     if (sound != null) {
+                        System.out.println("[CLIENT] Sound event found: " + sound.getId());
                         // Use player's Y coordinate for sound positioning
                         double y = client.player != null ? client.player.getY() : 64.0;
                         
@@ -56,6 +61,8 @@ public class OrbitalRailgunSoundsClient implements ClientModInitializer {
                             x, y, z,
                             volume, pitch, offsetMs
                         );
+                    } else {
+                        System.out.println("[CLIENT] ERROR: Sound event not found for ID: " + soundId);
                     }
                 });
             });

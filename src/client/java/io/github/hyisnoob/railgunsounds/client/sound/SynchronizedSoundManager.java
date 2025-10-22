@@ -59,8 +59,10 @@ public class SynchronizedSoundManager {
     public static void playSoundWithOffset(SoundEvent sound, SoundCategory category,
                                           double x, double y, double z,
                                           float volume, float pitch, long offsetMs) {
+        System.out.println("[CLIENT-SoundMgr] playSoundWithOffset called: offset=" + offsetMs + "ms, sound=" + sound.getId());
         MinecraftClient client = MinecraftClient.getInstance();
         if (client == null || client.player == null) {
+            System.out.println("[CLIENT-SoundMgr] ERROR: Client or player is null");
             return;
         }
         
@@ -79,8 +81,10 @@ public class SynchronizedSoundManager {
         activeSounds.put(soundId, soundInstance);
         
         // Play the sound
+        System.out.println("[CLIENT-SoundMgr] Playing sound instance");
         client.getSoundManager().play(soundInstance);
         soundInstance.markAsStarted();
+        System.out.println("[CLIENT-SoundMgr] Sound instance played and marked as started");
         
         // Try to seek the audio if offset is provided
         if (offsetMs > 0) {
@@ -128,6 +132,7 @@ public class SynchronizedSoundManager {
      * @return true if seeking was successful, false otherwise
      */
     private static boolean seekSound(PositionedRailgunSoundInstance soundInstance, long offsetMs) {
+        System.out.println("[CLIENT-SoundMgr] seekSound called with offsetMs: " + offsetMs);
         LOGGER.warn("seekSound called with offsetMs: {}", offsetMs);
         try {
             MinecraftClient client = MinecraftClient.getInstance();
