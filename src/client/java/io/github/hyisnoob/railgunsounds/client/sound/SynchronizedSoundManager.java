@@ -103,14 +103,16 @@ public class SynchronizedSoundManager {
                     }
                 }
                 if (!seekSuccessful) {
-                    LOGGER.info("Could not seek audio after {} attempts, playing from start", maxAttempts);
+                    LOGGER.warn("Could not seek audio after {} attempts, playing from start", maxAttempts);
+                } else {
+                    LOGGER.warn("Successfully seeked audio after retry");
                 }
             }).start();
             
-            LOGGER.info("Playing synchronized sound at ({}, {}, {}) with {}ms offset", 
+            LOGGER.warn("Playing synchronized sound at ({}, {}, {}) with {}ms offset - attempting to seek", 
                 x, y, z, offsetMs);
         } else {
-            LOGGER.debug("Playing sound at ({}, {}, {}) from start", x, y, z);
+            LOGGER.info("Playing sound at ({}, {}, {}) from start", x, y, z);
         }
         
         // Schedule cleanup after sound duration
@@ -126,13 +128,16 @@ public class SynchronizedSoundManager {
      * @return true if seeking was successful, false otherwise
      */
     private static boolean seekSound(PositionedRailgunSoundInstance soundInstance, long offsetMs) {
+        LOGGER.warn("seekSound called with offsetMs: {}", offsetMs);
         try {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client == null) {
+                LOGGER.warn("Client is null, cannot seek");
                 return false;
             }
             
             SoundManager soundManager = client.getSoundManager();
+            LOGGER.warn("Got sound manager, attempting reflection");
             
             // Access the sound system's internal structures using reflection
             // This is version-specific but works with Minecraft 1.20.1
@@ -152,10 +157,11 @@ public class SynchronizedSoundManager {
                     }
                 }
             } catch (Exception e) {
-                LOGGER.debug("Could not find soundSystem field: {}", e.getMessage());
+                LOGGER.warn("Could not find soundSystem field: {}", e.getMessage());
             }
             
             if (soundSystemField != null) {
+                LOGGER.warn("Found soundSystem field: {}", soundSystemField.getName());
                 Object soundSystem = soundSystemField.get(soundManager);
                 
                 if (soundSystem != null) {
@@ -173,11 +179,15 @@ public class SynchronizedSoundManager {
                             }
                         }
                     } catch (Exception e) {
-                        LOGGER.debug("Could not find sources field: {}", e.getMessage());
+                        LOGGER.warn("Could not find sources field: {}", e.getMessage());
                     }
                     
                     if (sourcesField != null) {
+                        LOGGER.warn("Found sources field: {}", sourcesField.getName());
                         Map<?, ?> sources = (Map<?, ?>) sourcesField.get(soundSystem);
+                        LOGGER.warn("Sources map size: {}, contains our instance: {}", 
+                            sources != null ? sources.size() : 0, 
+                            sources != null && sources.containsKey(soundInstance));
                         
                         if (sources != null && sources.containsKey(soundInstance)) {
                             Object channelHandle = sources.get(soundInstance);
@@ -228,29 +238,36 @@ public class SynchronizedSoundManager {
                                             // AL_NO_ERROR = 0
                                             int error = AL10.alGetError();
                                             if (error == 0) {
-                                                LOGGER.info("Successfully seeked audio to {}s offset (source ID: {})", 
+                                                LOGGER.warn("Successfully seeked audio to {}s offset (source ID: {})", 
                                                     offsetSeconds, sourceId);
                                                 return true;
                                             } else {
-                                                LOGGER.warn("OpenAL error when seeking: {}", error);
+                                                LOGGER.warn("OpenAL error when seeking: {} (hex: 0x{})", error, Integer.toHexString(error));
                                                 return false;
                                             }
                                         }
                                     }
                                 }
                             } catch (Exception e) {
-                                LOGGER.debug("Could not access channel source: {}", e.getMessage());
+                                LOGGER.warn("Could not access channel source: {}", e.getMessage(), e);
                             }
                         } else {
-                            LOGGER.debug("Sound instance not yet in sources map");
+                            LOGGER.warn("Sound instance not yet in sources map");
                         }
+                    } else {
+                        LOGGER.warn("sourcesField is null");
                     }
+                } else {
+                    LOGGER.warn("soundSystem is null");
                 }
+            } else {
+                LOGGER.warn("soundSystemField is null - could not find field");
             }
         } catch (Exception e) {
             // If reflection fails, we gracefully degrade to playing from the beginning
-            LOGGER.debug("Audio seeking not available (reflection failed): {}", e.getMessage());
+            LOGGER.warn("Audio seeking not available (reflection failed): {}", e.getMessage(), e);
         }
+        LOGGER.warn("Returning false - seek failed");
         return false;
     }
     
