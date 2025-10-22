@@ -43,11 +43,6 @@ dependencies {
 
     // Gson for JSON handeling
     implementation "com.google.code.gson:gson:2.10.1"
-    
-    // LWJGL for OpenAL audio seeking (sound synchronization)
-    // Note: LWJGL is already provided by Minecraft, but we declare it explicitly for clarity
-    compileOnly "org.lwjgl:lwjgl:3.3.1"
-    compileOnly "org.lwjgl:lwjgl-openal:3.3.1"
 }
 
 processResources {
