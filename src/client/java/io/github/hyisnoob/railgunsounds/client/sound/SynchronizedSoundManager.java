@@ -129,7 +129,7 @@ public class SynchronizedSoundManager {
         try {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client == null) {
-                return;
+                return false;
             }
             
             SoundManager soundManager = client.getSoundManager();
@@ -221,11 +221,13 @@ public class SynchronizedSoundManager {
                                             float offsetSeconds = offsetMs / 1000.0f;
                                             
                                             // Use OpenAL to set the playback position
-                                            AL10.alSourcef(sourceId, AL10.AL_SEC_OFFSET, offsetSeconds);
+                                            // AL_SEC_OFFSET = 0x1024
+                                            AL10.alSourcef(sourceId, 0x1024, offsetSeconds);
                                             
                                             // Check for OpenAL errors
+                                            // AL_NO_ERROR = 0
                                             int error = AL10.alGetError();
-                                            if (error == AL10.AL_NO_ERROR) {
+                                            if (error == 0) {
                                                 LOGGER.info("Successfully seeked audio to {}s offset (source ID: {})", 
                                                     offsetSeconds, sourceId);
                                                 return true;
