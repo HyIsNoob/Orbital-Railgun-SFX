@@ -1,4 +1,4 @@
-package io.github.hyisnoob.railgunsounds.client.sounds;
+package io.github.hyisnoob.railgunsounds.client.handler;
 
 import io.github.hyisnoob.railgunsounds.client.OrbitalRailgunSoundsClient;
 import io.github.hyisnoob.railgunsounds.registry.SoundsRegistry;
@@ -15,7 +15,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 
-public class OrbitalRailgunSoundsSounds {
+public class SoundsHandler {
     private static final Identifier ORBITAL_RAILGUN_ITEM_ID = new Identifier("orbital_railgun", "orbital_railgun");
 
     private boolean wasUsing = false;
