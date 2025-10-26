@@ -1,37 +1,25 @@
-# Orbital Railgun – Sounds Addon
+A lightweight client-side addon that adds custom sound effects to the [Orbital Railgun](https://modrinth.com/mod/orbital-railgun) mod. It introduces three core sounds—equip (draw), scope-on (start aiming), and fire (when the railgun actually shoots)
 
-Client-side addon that adds custom sound effects to the [Orbital Railgun](https://modrinth.com/mod/orbital-railgun) mod. It introduces three core sounds—equip (draw), scope-on (start aiming), and fire (when the railgun actually shoots)
+## Preview
 
-## Download (for players)
-
-- [Go to Modrinth](https://modrinth.com/mod/orbital-railgun-sounds)
-
-## How to Install
-
-1. Make sure you’re on Minecraft 1.20.1 with Fabric Loader and Fabric API installed.
-2. Install the original mod “Orbital Railgun” by Mishkis (required).
-3. Drop this addon’s `.jar` into your `mods` folder.
-
-This is client-side. You can join servers normally as long as your client has the original mod.
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/PIQCVdAr7fI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ## Features
 
-- Equip: plays when switching to the Orbital Railgun in your hotbar.
+- Equip: plays when switching to the Orbital Railgun in the hotbar.
 - Scope-on: plays when you begin aiming (hold right-click).
-- Fire: plays when the railgun actually fires (at cooldown start), not simply on release.
+- Fire: plays only when the railgun truly fires (at cooldown start), not simply on release.
 - Customizable Settings: Adjust volume for each sound or enable/disable specific sound effects via the config menu (accessible through Mod Menu).
-- Enhanced Audio: Compatible with Sound Physics Remastered and Dynamic Surroundings for realistic sound effects with reverb, echo, and environmental audio.
 
 ## Requirements
 
-- Minecraft 1.20.1
-- Fabric Loader + Fabric API
-- Original mod: Orbital Railgun by [Mishkis](https://modrinth.com/user/Mishkis)
-  - Mod page: <https://modrinth.com/mod/orbital-railgun>
+- Minecraft Fabric 1.20.1
+- Fabric API
+- Original mod: [Orbital Railgun](https://modrinth.com/mod/orbital-railgun) by [Mishkis](https://modrinth.com/user/Mishkis)
 - owo-lib (included in the mod)
 - Mod Menu (optional, for easy config access)
-- Sound Physics Remastered (optional, for enhanced audio effects)
-- Dynamic Surroundings (optional, for environmental audio enhancement)
+- Sound Physics Remastered (optional, for a better sound experience)
+- Dynamic Surroundings (optional, for a better sound experience)
 
 ## Configuration
 
@@ -41,14 +29,22 @@ Access the config screen through Mod Menu (if installed) to customize:
 
 Configuration is stored in `config/orbital-railgun-sounds.json5` in your Minecraft directory.
 
-## Notes
+## Installation
 
-- This addon does not change gameplay—only adds sound effects
-- If you Alt-Tab, Minecraft will pause audio when unfocused while the animations is still going so it will be not sync anymore!
+1. Place the JAR in your `mods` folder alongside Orbital Railgun and Fabric API.
+2. This is a client-side addon; you can join servers as long as your client has the original mod installed.
 
-## Credits & License
+## Issues or Ideas
 
-- Original mod: Orbital Railgun by [Mishkis](https://modrinth.com/user/Mishkis)
-- Sound assets: created by HyIsNoob.
-- Mod Improvements and new features: KingIronMan2011
-- Source code license: CC0 1.0 (see LICENSE)
+If you found any issues/bugs or have some ideas for this mod go to the issue tracker and make a new issue. We also welcome any contributions in code. We also have a TODO.md if you dont have an idea and want to help us out.
+
+## Need Help?
+
+Feel free to contact us on Discord! Our usernames are `HyIsNoob` & `KingIronMan2011`.
+
+## Credits
+
+- Original mod: Orbital Railgun by **[Mishkis](https://modrinth.com/user/Mishkis)**
+- Addons Maintainer: **[KingIronMan2011](https://modrinth.com/user/KingIronMan2011)**
+- SFX/Addons Founder: created by **[HyIsNoob](https://modrinth.com/user/HyIsNoob)**
+- Source code license: MIT (see LICENSE)
