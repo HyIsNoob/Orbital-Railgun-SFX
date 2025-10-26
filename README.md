@@ -36,7 +36,7 @@ Configuration is stored in `config/orbital-railgun-sounds.json5` in your Minecra
 
 ## Issues or Ideas
 
-If you found any issues/bugs or have some ideas for this mod go to the issue tracker and make a new issue. We also welcome any contributions in code. We also have a TODO.md if you dont have an idea and want to help us out.
+If you found any issues/bugs or have some ideas for this mod go to the issue tracker and make a new issue. We also welcome any contributions in code. We also have a TODO.md if you don't have an idea and want to help us out.
 
 ## Need Help?
 
