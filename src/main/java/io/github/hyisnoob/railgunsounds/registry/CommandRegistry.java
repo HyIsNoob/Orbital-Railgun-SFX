@@ -11,26 +11,27 @@ import net.minecraft.text.Text;
 
 public class CommandRegistry {
     private static int showHelp(CommandContext<ServerCommandSource> context) {
-        context.getSource().sendFeedback(() -> Text.literal("Available commands:\n" +
-                "/orsounds debug <true|false> - Toggle debug mode\n" +
-                "/orsounds help - List all available commands\n"), false);
+        context.getSource().sendFeedback(() -> Text.literal("""
+                Available commands:
+                /orsounds radius <value> - Set the sound radius value
+                /orsounds debug <true|false> - Toggle debug mode
+                /orsounds help - List all available commands
+                """), false);
         return 1;
     }
 
     public static void registerCommands() {
         ServerConfig.INSTANCE.loadConfig();
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            dispatcher.register(CommandManager.literal("orsounds")
-                    .executes(CommandRegistry::showHelp)
-                    .then(CommandManager.literal("debug")
-                            .then(CommandManager.argument("enabled", BoolArgumentType.bool())
-                                    .executes(context -> toggleDebugMode(context, BoolArgumentType.getBool(context, "enabled")))))
-                    .then(CommandManager.literal("radius")
-                            .then(CommandManager.argument("value", DoubleArgumentType.doubleArg(0.0))
-                                    .executes(context -> setRadiusValue(context, DoubleArgumentType.getDouble(context, "value")))))
-                    .then(CommandManager.literal("help")
-                            .executes(CommandRegistry::showHelp)));
-        });
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(CommandManager.literal("orsounds")
+                .executes(CommandRegistry::showHelp)
+                .then(CommandManager.literal("debug")
+                        .then(CommandManager.argument("enabled", BoolArgumentType.bool())
+                                .executes(context -> toggleDebugMode(context, BoolArgumentType.getBool(context, "enabled")))))
+                .then(CommandManager.literal("radius")
+                        .then(CommandManager.argument("value", DoubleArgumentType.doubleArg(0.0))
+                                .executes(context -> setRadiusValue(context, DoubleArgumentType.getDouble(context, "value")))))
+                .then(CommandManager.literal("help")
+                        .executes(CommandRegistry::showHelp))));
     }
 
     private static int toggleDebugMode(CommandContext<ServerCommandSource> context, boolean enabled) {
