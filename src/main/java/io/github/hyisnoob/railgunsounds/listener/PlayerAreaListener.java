@@ -91,7 +91,7 @@ public class PlayerAreaListener {
                                 previousState.lastLaserZ != laserZ;
 
         // Use the existing timestamp if this is the same location, otherwise use the new one
-        long timestamp = (isNewLocation || previousState == null) ? fireTimestamp : previousState.fireTimestamp;
+        long timestamp = isNewLocation ? fireTimestamp : previousState.fireTimestamp;
 
         playerStates.put(playerId, new AreaState(currentlyInside, laserX, laserZ, timestamp));
 
@@ -124,13 +124,6 @@ public class PlayerAreaListener {
     public static void clearPlayerState(UUID playerId) {
         playerStates.remove(playerId);
     }
-
-    /**
-     * Clears all player states (useful for cleanup)
-     */
-    public static void clearAllStates() {
-        playerStates.clear();
-    }
     
     /**
      * Sets a callback to be invoked when a player's area state changes.
@@ -161,22 +154,11 @@ public class PlayerAreaListener {
             }
         }
     }
-    
+
     /**
-     * Event data for area state changes
-     */
-    public static class AreaChangeEvent {
-        public final ServerPlayerEntity player;
-        public final AreaCheckResult result;
-        public final double laserX;
-        public final double laserZ;
-        
-        public AreaChangeEvent(ServerPlayerEntity player, AreaCheckResult result, double laserX, double laserZ) {
-            this.player = player;
-            this.result = result;
-            this.laserX = laserX;
-            this.laserZ = laserZ;
-        }
+         * Event data for area state changes
+         */
+        public record AreaChangeEvent(ServerPlayerEntity player, AreaCheckResult result, double laserX, double laserZ) {
     }
 
     /**

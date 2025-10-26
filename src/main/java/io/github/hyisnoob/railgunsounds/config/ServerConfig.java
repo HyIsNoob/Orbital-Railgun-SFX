@@ -2,6 +2,7 @@ package io.github.hyisnoob.railgunsounds.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.hyisnoob.railgunsounds.OrbitalRailgunSounds;
 
 import java.io.File;
 import java.io.FileReader;
@@ -18,6 +19,7 @@ public class ServerConfig {
     public boolean isDebugMode() {
         return debugMode;
     }
+
     public double getSoundRange() {
         return soundRange;
     }
@@ -36,10 +38,14 @@ public class ServerConfig {
         if (CONFIG_FILE.exists()) {
             try (FileReader reader = new FileReader(CONFIG_FILE)) {
                 ServerConfig config = GSON.fromJson(reader, ServerConfig.class);
-                this.debugMode = config.debugMode;
-                this.soundRange = config.soundRange;
+                if (config != null) {
+                    this.debugMode = config.debugMode;
+                    this.soundRange = config.soundRange;
+                } else {
+                    OrbitalRailgunSounds.LOGGER.warn("Config file parsed to null, using defaults: {}", CONFIG_FILE.getAbsolutePath());
+                }
             } catch (IOException e) {
-                System.err.println("Failed to load config: " + e.getMessage());
+                OrbitalRailgunSounds.LOGGER.error("Failed to load config: {}", e.getMessage());
             }
         } else {
             saveConfig();
@@ -50,14 +56,17 @@ public class ServerConfig {
         try {
             File parentDir = CONFIG_FILE.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
-                parentDir.mkdirs();
+                boolean created = parentDir.mkdirs();
+                if (!created && !parentDir.exists()) {
+                    OrbitalRailgunSounds.LOGGER.warn("Could not create config directory: {}", parentDir.getAbsolutePath());
+                }
             }
 
             try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
                 GSON.toJson(this, writer);
             }
         } catch (IOException e) {
-            System.err.println("Failed to save config: " + e.getMessage());
+            OrbitalRailgunSounds.LOGGER.error("Failed to save config: {}", e.getMessage());
         }
     }
 }
