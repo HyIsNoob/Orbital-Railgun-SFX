@@ -124,13 +124,6 @@ public class PlayerAreaListener {
     public static void clearPlayerState(UUID playerId) {
         playerStates.remove(playerId);
     }
-
-    /**
-     * Clears all player states (useful for cleanup)
-     */
-    public static void clearAllStates() {
-        playerStates.clear();
-    }
     
     /**
      * Sets a callback to be invoked when a player's area state changes.

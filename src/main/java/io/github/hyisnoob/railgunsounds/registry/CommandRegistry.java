@@ -44,9 +44,4 @@ public class CommandRegistry {
         context.getSource().sendFeedback(() -> Text.literal("Radius set to: " + radius), false);
         return 1;
     }
-
-
-    public static boolean isDebugMode() {
-        return ServerConfig.INSTANCE.isDebugMode();
-    }
 }

@@ -241,13 +241,6 @@ public class OrbitalRailgunSounds implements ModInitializer {
     }
     
     /**
-     * Plays the railgun shoot sound to a specific player (legacy method without offset).
-     */
-    private static void playRailgunSoundToPlayer(ServerPlayerEntity player, double laserX, double laserZ) {
-        playRailgunSoundToPlayer(player, laserX, laserZ, 0L);
-    }
-    
-    /**
      * Sends a packet to the client to stop area-based sounds.
      */
     private static void stopAreaSoundsForPlayer(ServerPlayerEntity player) {
