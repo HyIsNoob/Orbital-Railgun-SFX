@@ -2,7 +2,7 @@ A lightweight client-side addon that adds custom sound effects to the [Orbital R
 
 ## Preview
 
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/PIQCVdAr7fI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+[![This mod has SFX now??? Orbital Railgun by Mishkis](https://img.youtube.com/vi/PIQCVdAr7fI/0.jpg)](https://www.youtube.com/watch?v=PIQCVdAr7fI)
 
 ## Features
 
