@@ -9,5 +9,13 @@
   "text.config.orbital-railgun-sounds.option.equipVolume": "Equip Volume",
   "text.config.orbital-railgun-sounds.option.enableScopeSound": "Enable Scope Sound",
   "text.config.orbital-railgun-sounds.option.enableShootSound": "Enable Shoot Sound",
-  "text.config.orbital-railgun-sounds.option.enableEquipSound": "Enable Equip Sound"
+  "text.config.orbital-railgun-sounds.option.enableEquipSound": "Enable Equip Sound",
+
+  "text.orbital_railgun_sounds.warning.prefix": "[Orbital Railgun SFX] ",
+  "text.orbital_railgun_sounds.warning.message": "This mod is outdated! Please use ",
+  "text.orbital_railgun_sounds.warning.mod_name": "Orbital Railgun Enhanced",
+  "text.orbital_railgun_sounds.warning.suffix": " instead.",
+  "text.orbital_railgun_sounds.warning.hover": "Click to open Modrinth page",
+  "text.orbital_railgun_sounds.warning.title": "§6[Orbital Railgun SFX]§r §eThis mod is outdated!§r",
+  "text.orbital_railgun_sounds.warning.subtitle": "§aPlease use Orbital Railgun Enhanced instead.§r"
 }

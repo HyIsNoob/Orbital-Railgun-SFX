@@ -23,19 +23,19 @@ public class ClientPlayerEntityMixin {
             warningShown = true;
             ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
             
-            MutableText modLink = Text.literal("Orbital Railgun Enhanced")
+            MutableText modLink = Text.translatable("text.orbital_railgun_sounds.warning.mod_name")
                 .formatted(Formatting.GREEN, Formatting.BOLD, Formatting.UNDERLINE)
                 .styled(style -> style
                     .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/orbital-railgun-enhanced"))
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to open Modrinth page"))));
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("text.orbital_railgun_sounds.warning.hover"))));
             
             player.sendMessage(
-                Text.literal("[Orbital Railgun SFX] ")
+                Text.translatable("text.orbital_railgun_sounds.warning.prefix")
                     .formatted(Formatting.GOLD)
-                    .append(Text.literal("This mod is outdated! Please use ")
+                    .append(Text.translatable("text.orbital_railgun_sounds.warning.message")
                         .formatted(Formatting.YELLOW))
                     .append(modLink)
-                    .append(Text.literal(" instead.")
+                    .append(Text.translatable("text.orbital_railgun_sounds.warning.suffix")
                         .formatted(Formatting.YELLOW)),
                 false
             );
