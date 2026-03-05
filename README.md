@@ -1,3 +1,5 @@
+# This Mod is Deprecated use Orbital Railgun Enhanced instead!
+
 A lightweight client-side addon that adds custom sound effects to the [Orbital Railgun](https://modrinth.com/mod/orbital-railgun) mod. It introduces three core sounds—equip (draw), scope-on (start aiming), and fire (when the railgun actually shoots)
 
 ## Preview
